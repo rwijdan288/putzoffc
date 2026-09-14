@@ -1,0 +1,1855 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#ffffff">
+    <title>Putz Api - Interactive Documentation</title>
+    <link rel="icon" type="image/jpeg" href="https://app.putzoffc.biz.id/pv86c5uv.jpg">
+    
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace']
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Smooth Scrolling */
+        html, body, .smooth-scroll {
+            scroll-behavior: smooth !important;
+        }
+        
+        /* Modern light scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Micro animations */
+        .card-hover {
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+        }
+        
+        /* Expandable endpoint details */
+        .endpoint-expand {
+            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+        .endpoint-expand.open {
+            max-height: 4000px;
+            opacity: 1;
+        }
+
+        /* Clean loader */
+        .spinner {
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid #4f46e5;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Toast popup */
+        .toast {
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Range Slider Styling */
+        .music-range-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 9999px;
+            outline: none;
+            cursor: pointer;
+        }
+        .music-range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #4f46e5;
+            cursor: pointer;
+            border: 2px solid #ffffff;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+            transition: transform 0.15s ease;
+        }
+        .music-range-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.25);
+        }
+
+        /* Equalizer Animation */
+        .eq-bar {
+            width: 3px;
+            border-radius: 2px;
+            background-color: #4f46e5;
+        }
+        .eq-playing .eq-bar:nth-child(1) { animation: eqAnim1 0.75s ease-in-out infinite; }
+        .eq-playing .eq-bar:nth-child(2) { animation: eqAnim2 0.65s ease-in-out infinite; }
+        .eq-playing .eq-bar:nth-child(3) { animation: eqAnim3 0.85s ease-in-out infinite; }
+        @keyframes eqAnim1 { 0%, 100% { height: 4px; } 50% { height: 16px; } }
+        @keyframes eqAnim2 { 0%, 100% { height: 14px; } 50% { height: 5px; } }
+        @keyframes eqAnim3 { 0%, 100% { height: 6px; } 50% { height: 15px; } }
+
+        /* Floating Nav Buttons */
+        .float-nav-btn {
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .float-nav-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.25);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-brand-100 selection:text-brand-900 min-h-screen flex flex-col">
+
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center transition-opacity duration-300">
+        <div class="spinner mb-4"></div>
+        <p class="text-sm font-semibold text-slate-700 tracking-wide">Memuat Putz API Documentation...</p>
+        <span class="text-xs text-slate-400 mt-1">Menyiapkan 200+ REST Endpoints</span>
+    </div>
+
+    <!-- App Container -->
+    <div class="flex h-screen overflow-hidden bg-slate-50">
+        
+        <!-- Mobile Sidebar Backdrop -->
+        <div id="mobileBackdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40 hidden md:hidden transition-opacity" onclick="toggleMobileSidebar(false)"></div>
+
+        <!-- Sidebar Navigation (Light, Clean, High Contrast) -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-200/90 flex flex-col transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 ease-in-out shadow-lg md:shadow-none">
+            
+            <!-- Sidebar Header -->
+            <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <img src="https://app.putzoffc.biz.id/pv86c5uv.jpg" alt="Putz API" class="w-10 h-10 rounded-xl object-cover ring-2 ring-slate-100 shadow-sm">
+                        <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-base text-slate-900 leading-tight" id="sidebarBrandName">Putz Api</h1>
+                        <div class="flex items-center gap-1.5 mt-0.5">
+                            <span class="text-[10px] font-semibold uppercase tracking-wider bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded border border-emerald-200/60">v2.0 Online</span>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="md:hidden text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100" onclick="toggleMobileSidebar(false)">
+                    <i class="fas fa-times text-base"></i>
+                </button>
+            </div>
+
+            <!-- Category Search Filter -->
+            <div class="px-4 pt-3 pb-2">
+                <div class="relative">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="sidebarFilterInput" placeholder="Cari kategori..." 
+                           class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
+                           oninput="filterSidebarCategories(this.value)">
+                </div>
+            </div>
+
+            <!-- Navigation Links List -->
+            <div class="flex-1 overflow-y-auto px-3 py-2 space-y-1 smooth-scroll" id="sidebarNavList">
+                <!-- Injected via JavaScript -->
+            </div>
+
+            <!-- Sidebar Footer Status -->
+            <div class="p-4 border-t border-slate-100 bg-slate-50/50">
+                <div class="flex items-center justify-between text-xs text-slate-600 mb-2">
+                    <span class="font-medium flex items-center gap-1.5 text-slate-700">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Server Ready
+                    </span>
+                    <span class="font-mono text-[11px] bg-slate-200/70 text-slate-700 px-1.5 py-0.5 rounded" id="totalEndpointsCountBadge">204 APIs</span>
+                </div>
+                <div class="flex items-center gap-2 pt-2 border-t border-slate-200/60">
+                    <a href="https://t.me/putzpay" target="_blank" rel="noopener noreferrer" 
+                       class="flex-1 py-1.5 px-2.5 text-center text-xs font-semibold bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-xs">
+                        <i class="fab fa-telegram text-sky-500"></i> Telegram
+                    </a>
+                    <a href="/gomerch" 
+                       class="py-1.5 px-2.5 text-center text-xs font-semibold bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200/80 rounded-lg transition-all flex items-center justify-center gap-1.5" title="GoMerchant Portal">
+                        <i class="fas fa-store text-brand-600"></i> GoMerch
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col h-screen overflow-hidden bg-slate-50">
+            
+            <!-- Modern Top Navigation Bar -->
+            <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3 min-w-0">
+                    <button type="button" onclick="toggleMobileSidebar(true)" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 active:scale-95 transition-all">
+                        <i class="fas fa-bars text-sm"></i>
+                    </button>
+                    <div class="min-w-0">
+                        <h2 id="topBarTitle" class="font-bold text-base sm:text-lg text-slate-900 truncate">Dashboard Overview</h2>
+                        <p class="text-[11px] text-slate-500 hidden sm:block truncate" id="topBarSubtitle">Dokumentasi REST API interaktif dan terintegrasi</p>
+                    </div>
+                </div>
+
+                <!-- Global Endpoint Search Bar -->
+                <div class="flex-1 max-w-md hidden sm:block">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="globalSearchInput" placeholder="Cari endpoint (contoh: tiktok, gpt, qris)..." 
+                               class="w-full pl-9 pr-8 py-2 text-xs bg-slate-100/70 border border-slate-200/80 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
+                               oninput="handleGlobalSearch(this.value)">
+                        <button type="button" id="clearSearchBtn" onclick="clearGlobalSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs p-1">
+                            <i class="fas fa-times-circle"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Quick Links & Profile -->
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <button type="button" onclick="smoothScrollToTop()" class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-all" title="Scroll Ke Atas">
+                        <i class="fas fa-arrow-up text-[10px]"></i> Ke Atas
+                    </button>
+                    <button type="button" onclick="smoothScrollToBottom()" class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-all" title="Scroll Ke Bawah">
+                        <i class="fas fa-arrow-down text-[10px]"></i> Ke Bawah
+                    </button>
+                    <a id="headerContactLink" href="https://t.me/putzpay" target="_blank" rel="noopener noreferrer" 
+                       class="flex items-center gap-2 pl-2 pr-3 py-1 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-full transition-all group">
+                        <img src="https://app.putzoffc.biz.id/pv86c5uv.jpg" alt="Developer" class="w-6 h-6 rounded-full object-cover">
+                        <span class="text-xs font-medium text-slate-700 group-hover:text-brand-600">PutzOfficial</span>
+                    </a>
+                </div>
+            </header>
+
+            <!-- Mobile Search Bar (Visible only on small screens) -->
+            <div class="sm:hidden px-4 pt-3 pb-1 bg-white border-b border-slate-100" id="mobileSearchContainer">
+                <div class="relative">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="mobileSearchInput" placeholder="Cari endpoint..." 
+                           class="w-full pl-8 pr-8 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                           oninput="handleGlobalSearch(this.value)">
+                </div>
+            </div>
+
+            <!-- Category Pills Quick Bar -->
+            <div class="bg-white/80 backdrop-blur-xs border-b border-slate-200/60 px-4 sm:px-6 py-2 overflow-x-auto whitespace-nowrap flex items-center gap-1.5 text-xs smooth-scroll" id="quickCategoryPills">
+                <!-- Injected via JavaScript -->
+            </div>
+
+            <!-- Scrollable Content Viewport with Smooth Scroll -->
+            <main id="mainScrollContainer" class="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 smooth-scroll relative">
+                
+                <!-- Dynamic Content (Dashboard or Endpoints List) -->
+                <div id="dynamicContentArea" class="max-w-7xl mx-auto space-y-6">
+                    <!-- Injected dynamically -->
+                </div>
+
+                <!-- Footer -->
+                <footer class="max-w-7xl mx-auto mt-16 pt-6 pb-12 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        <span id="footerCopyright">© 2026 PutzOffc x KaaOffc. All rights reserved.</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <a href="https://t.me/putzpay" target="_blank" class="hover:text-brand-600 transition-colors">Telegram Support</a>
+                        <span>•</span>
+                        <a href="https://github.com" target="_blank" class="hover:text-brand-600 transition-colors">GitHub Repository</a>
+                        <span>•</span>
+                        <a href="/settings" target="_blank" class="hover:text-brand-600 transition-colors">Raw Settings JSON</a>
+                    </div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- ==================== FLOATING QUICK SCROLL CONTROLS (SMOOTH SCROLL) ==================== -->
+    <div class="fixed bottom-20 sm:bottom-6 right-5 z-40 flex flex-col gap-2">
+        <button type="button" onclick="smoothScrollToTop()" 
+                class="float-nav-btn w-10 h-10 rounded-xl bg-white border border-slate-200/90 text-slate-700 hover:text-brand-600 hover:bg-brand-50 flex items-center justify-center active:scale-95 transition-all shadow-md"
+                title="Scroll Ke Paling Atas (Smooth Scroll)">
+            <i class="fas fa-chevron-up text-sm"></i>
+        </button>
+        <button type="button" onclick="smoothScrollToBottom()" 
+                class="float-nav-btn w-10 h-10 rounded-xl bg-white border border-slate-200/90 text-slate-700 hover:text-brand-600 hover:bg-brand-50 flex items-center justify-center active:scale-95 transition-all shadow-md"
+                title="Scroll Ke Paling Bawah (Smooth Scroll)">
+            <i class="fas fa-chevron-down text-sm"></i>
+        </button>
+    </div>
+
+    <!-- ==================== STICKY MINI MUSIC PLAYER (LIGHT & MODERN) ==================== -->
+    <div id="stickyMiniPlayer" class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 flex flex-col shadow-xl transform translate-y-full transition-transform duration-300">
+        <!-- Live Scrubber -->
+        <div class="relative w-full h-1.5 bg-slate-100 cursor-pointer group" id="miniPlayerScrubberContainer" onclick="MusicPlayer.handleMiniBarClick(event)" title="Geser durasi audio">
+            <div id="miniPlayerProgress" class="h-full bg-brand-600 rounded-r-full pointer-events-none transition-all" style="width: 0%;"></div>
+        </div>
+
+        <div class="px-4 py-2.5 sm:px-6 flex items-center justify-between gap-3 max-w-7xl mx-auto w-full">
+            <!-- Left Track Info -->
+            <div class="flex items-center gap-3 min-w-0 max-w-[45%] sm:max-w-[35%]">
+                <div class="relative w-11 h-11 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shadow-xs flex-shrink-0">
+                    <img id="miniPlayerCover" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=100&auto=format&fit=crop&q=60" alt="Cover" class="w-full h-full object-cover">
+                    <div id="miniPlayerEq" class="absolute inset-0 bg-slate-900/40 flex items-center justify-center hidden">
+                        <div class="flex items-end gap-0.5 h-3 eq-playing">
+                            <div class="eq-bar bg-white"></div>
+                            <div class="eq-bar bg-white"></div>
+                            <div class="eq-bar bg-white"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="min-w-0">
+                    <h6 id="miniPlayerTitle" class="text-xs sm:text-sm font-bold text-slate-900 truncate">Song Title</h6>
+                    <p id="miniPlayerArtist" class="text-[11px] text-slate-500 truncate">Artist Name</p>
+                </div>
+            </div>
+
+            <!-- Center Controls -->
+            <div class="flex flex-col items-center">
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <button type="button" onclick="MusicPlayer.prev()" class="w-8 h-8 flex items-center justify-center text-slate-600 hover:text-brand-600 active:scale-95 transition-transform" title="Sebelumnya">
+                        <i class="fas fa-backward-step text-sm"></i>
+                    </button>
+                    <button type="button" id="miniPlayPauseBtn" onclick="MusicPlayer.togglePlay()" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand-600 hover:bg-brand-700 text-white flex items-center justify-center shadow-md active:scale-95 transition-all" title="Play/Pause">
+                        <i class="fas fa-play text-xs ml-0.5" id="miniPlayPauseIcon"></i>
+                    </button>
+                    <button type="button" onclick="MusicPlayer.next()" class="w-8 h-8 flex items-center justify-center text-slate-600 hover:text-brand-600 active:scale-95 transition-transform" title="Berikutnya">
+                        <i class="fas fa-forward-step text-sm"></i>
+                    </button>
+                </div>
+                <div class="text-[10px] font-mono text-slate-400 hidden sm:block mt-0.5">
+                    <span id="miniCurrentTime">00:00</span> / <span id="miniDuration">00:30</span>
+                </div>
+            </div>
+
+            <!-- Right Volume & Actions -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <div class="hidden md:flex items-center gap-2">
+                    <button type="button" onclick="MusicPlayer.toggleMute()" class="text-slate-500 hover:text-brand-600 text-xs">
+                        <i id="miniVolumeIcon" class="fas fa-volume-high"></i>
+                    </button>
+                    <input type="range" id="miniVolumeSlider" min="0" max="1" step="0.01" value="0.8" oninput="MusicPlayer.setVolume(parseFloat(this.value))" class="music-range-slider w-20">
+                </div>
+                <button type="button" onclick="MusicPlayer.toggleQueueDrawer()" class="relative w-8 h-8 flex items-center justify-center text-slate-600 hover:text-brand-600 rounded-lg hover:bg-slate-100 transition-colors" title="Playlist Queue">
+                    <i class="fas fa-list-ul text-xs"></i>
+                    <span id="miniQueueBadge" class="absolute -top-1 -right-1 bg-brand-600 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">1</span>
+                </button>
+                <button type="button" onclick="MusicPlayer.closeMiniPlayer()" class="w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors" title="Tutup Player">
+                    <i class="fas fa-times text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Music Queue Drawer Modal -->
+    <div id="musicQueueDrawer" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 hidden transition-opacity flex justify-end" onclick="if(event.target===this)MusicPlayer.toggleQueueDrawer(false)">
+        <div class="w-full max-w-md bg-white h-full shadow-2xl flex flex-col transform transition-transform duration-300">
+            <div class="p-4 border-b border-slate-200 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-music text-brand-600 text-sm"></i>
+                    <h5 class="font-bold text-slate-900 text-sm">Daftar Putar Musik</h5>
+                    <span id="queueDrawerCount" class="text-[11px] bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full font-semibold">0 Lagu</span>
+                </div>
+                <button type="button" onclick="MusicPlayer.toggleQueueDrawer(false)" class="w-7 h-7 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-500">
+                    <i class="fas fa-times text-xs"></i>
+                </button>
+            </div>
+            <div id="queueDrawerList" class="flex-1 overflow-y-auto p-3 space-y-1.5 smooth-scroll">
+                <!-- Injected via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toastContainer" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 pointer-events-none"></div>
+
+    <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+    <script>
+        // Core State
+        let settings = {};
+        let originalCategories = [];
+        let allApiItems = [];
+        let currentView = 'dashboard'; // 'dashboard', 'all', or category slug/name
+        let searchQuery = '';
+
+        // Category Icon Dictionary
+        const categoryIcons = {
+            'Downloader': 'fas fa-cloud-arrow-down', 
+            'Imagecreator': 'fas fa-wand-magic-sparkles', 
+            'Openai': 'fas fa-brain', 
+            'Random': 'fas fa-shuffle',
+            'Search': 'fas fa-magnifying-glass', 
+            'Stalker': 'fas fa-user-shield', 
+            'Tools': 'fas fa-toolbox', 
+            'Orderkuota': 'fas fa-mobile-screen',
+            'Game': 'fas fa-gamepad', 
+            'Text & Quotes': 'fas fa-quote-right', 
+            'Calculator': 'fas fa-calculator', 
+            'Developer Tools': 'fas fa-code',
+            'Information': 'fas fa-circle-info', 
+            'Islamic': 'fas fa-mosque', 
+            'Primbon': 'fas fa-star-and-crescent', 
+            'TempMail': 'fas fa-envelope-open-text',
+            'AI Tools': 'fas fa-robot', 
+            'Tools Ai': 'fas fa-robot', 
+            'Entertainment': 'fas fa-film', 
+            'Utilities': 'fas fa-sliders', 
+            'Social Media': 'fas fa-share-nodes',
+            'Canvas': 'fas fa-palette', 
+            'Alight Motion': 'fas fa-video', 
+            'Gopay Merchant': 'fas fa-store', 
+            'Music': 'fas fa-music',
+            'Anime Streaming': 'fas fa-tv', 
+            'Anime': 'fas fa-play'
+        };
+
+        // Method Styling Helper (Pure Light Mode)
+        function getMethodBadge(method) {
+            const m = (method || 'GET').toUpperCase();
+            if (m === 'GET') {
+                return `<span class="px-2 py-0.5 rounded-md text-[11px] font-bold font-mono bg-emerald-50 text-emerald-700 border border-emerald-200">GET</span>`;
+            } else if (m === 'POST') {
+                return `<span class="px-2 py-0.5 rounded-md text-[11px] font-bold font-mono bg-blue-50 text-blue-700 border border-blue-200">POST</span>`;
+            } else if (m === 'PUT') {
+                return `<span class="px-2 py-0.5 rounded-md text-[11px] font-bold font-mono bg-amber-50 text-amber-700 border border-amber-200">PUT</span>`;
+            } else if (m === 'DELETE') {
+                return `<span class="px-2 py-0.5 rounded-md text-[11px] font-bold font-mono bg-rose-50 text-rose-700 border border-rose-200">DELETE</span>`;
+            }
+            return `<span class="px-2 py-0.5 rounded-md text-[11px] font-bold font-mono bg-slate-100 text-slate-700 border border-slate-200">${m}</span>`;
+        }
+
+        // ==================== APP INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initializeApp();
+            initClientStats();
+        });
+
+        async function initializeApp() {
+            try {
+                const resp = await fetch('/settings').catch(() => null);
+                if (resp && resp.ok) {
+                    settings = await resp.json();
+                } else {
+                    settings = getDefaultSettings();
+                }
+
+                if (settings.categories && settings.categories.length) {
+                    originalCategories = JSON.parse(JSON.stringify(settings.categories));
+                } else {
+                    originalCategories = getDemoCategories();
+                }
+
+                // Flatten all items with category reference
+                allApiItems = [];
+                originalCategories.forEach(cat => {
+                    (cat.items || []).forEach(item => {
+                        allApiItems.push({ ...item, category: cat.name });
+                    });
+                });
+
+                // Update Total Count Badges
+                const totalCountEl = document.getElementById('totalEndpointsCountBadge');
+                if (totalCountEl) totalCountEl.textContent = `${allApiItems.length} APIs`;
+
+                setupUI();
+                buildSidebarNav();
+                buildQuickPills();
+                renderView();
+
+            } catch (err) {
+                console.error('Initialization error:', err);
+                renderDashboard();
+            } finally {
+                const loader = document.getElementById('loadingScreen');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.display = 'none', 300);
+                }
+            }
+        }
+
+        function setupUI() {
+            if (settings.name) {
+                document.getElementById('sidebarBrandName').innerText = settings.name;
+                document.title = `${settings.name} - Interactive Documentation`;
+            }
+            if (settings.creator) {
+                document.getElementById('footerCopyright').innerText = `© 2026 PutzOffc x KaaOffc. All rights reserved.`;
+            }
+            const contact = settings.linkWhatsapp || settings.linkChannel || 'https://t.me/putzpay';
+            document.getElementById('headerContactLink').href = contact;
+        }
+
+        function getDefaultSettings() {
+            return {
+                name: "Putz Api",
+                creator: "PutzOfficial",
+                description: "Putz Api is a simple and lightweight REST API built with Express.js",
+                categories: getDemoCategories(),
+                linkWhatsapp: "https://t.me/putzpay",
+                linkChannel: "https://t.me/putzpay"
+            };
+        }
+
+        function getDemoCategories() {
+            return [
+                {
+                    name: "Downloader",
+                    items: [
+                        { name: "Instagram Downloader", method: "GET", path: "/api/download/instagram", description: "Download Instagram reels, post, & stories", parameters: { apikey: { type: "string", example: "ptz", required: true }, url: { type: "string", example: "https://instagram.com/p/xxx", required: true } } },
+                        { name: "TikTok Downloader", method: "GET", path: "/api/download/tiktok", description: "Download TikTok videos no watermark", parameters: { apikey: { type: "string", example: "ptz", required: true }, url: { type: "string", example: "https://vt.tiktok.com/xxx", required: true } } }
+                    ]
+                }
+            ];
+        }
+
+        // ==================== SIDEBAR & NAVIGATION BUILDERS ====================
+        function buildSidebarNav(filterKeyword = '') {
+            const list = document.getElementById('sidebarNavList');
+            if (!list) return;
+            list.innerHTML = '';
+
+            const kw = filterKeyword.toLowerCase().trim();
+
+            // 1. Dashboard Link
+            if (!kw || 'dashboard'.includes(kw)) {
+                const isDashActive = currentView === 'dashboard';
+                const dashLi = document.createElement('a');
+                dashLi.href = 'javascript:void(0)';
+                dashLi.onclick = () => switchView('dashboard');
+                dashLi.className = `flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                    isDashActive ? 'bg-brand-600 text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'
+                }`;
+                dashLi.innerHTML = `
+                    <div class="flex items-center gap-2.5">
+                        <i class="fas fa-chart-pie ${isDashActive ? 'text-white' : 'text-slate-400'}"></i>
+                        <span>Dashboard</span>
+                    </div>
+                `;
+                list.appendChild(dashLi);
+            }
+
+            // 2. All Endpoints Link
+            if (!kw || 'all endpoints'.includes(kw)) {
+                const isAllActive = currentView === 'all';
+                const allLi = document.createElement('a');
+                allLi.href = 'javascript:void(0)';
+                allLi.onclick = () => switchView('all');
+                allLi.className = `flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                    isAllActive ? 'bg-brand-600 text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'
+                }`;
+                allLi.innerHTML = `
+                    <div class="flex items-center gap-2.5">
+                        <i class="fas fa-layer-group ${isAllActive ? 'text-white' : 'text-slate-400'}"></i>
+                        <span>Semua Endpoints</span>
+                    </div>
+                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded-full ${isAllActive ? 'bg-brand-700 text-white' : 'bg-slate-100 text-slate-600'}">${allApiItems.length}</span>
+                `;
+                list.appendChild(allLi);
+            }
+
+            // Section Label
+            const divider = document.createElement('div');
+            divider.className = 'pt-3 pb-1 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider';
+            divider.innerText = 'Kategori API';
+            list.appendChild(divider);
+
+            // 3. Category Items
+            originalCategories.forEach(cat => {
+                if (!cat.name) return;
+                const lower = cat.name.toLowerCase();
+                if (kw && !lower.includes(kw)) return;
+
+                const isActive = currentView === lower;
+                const icon = categoryIcons[cat.name] || 'fas fa-folder';
+                const count = (cat.items || []).length;
+
+                const catA = document.createElement('a');
+                catA.href = 'javascript:void(0)';
+                catA.onclick = () => switchView(lower);
+                catA.className = `flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                    isActive ? 'bg-brand-600 text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'
+                }`;
+                catA.innerHTML = `
+                    <div class="flex items-center gap-2.5 truncate pr-2">
+                        <i class="${icon} ${isActive ? 'text-white' : 'text-slate-400'} text-xs w-4 text-center"></i>
+                        <span class="truncate">${cat.name}</span>
+                    </div>
+                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded-full ${isActive ? 'bg-brand-700 text-white' : 'bg-slate-100 text-slate-600'}">${count}</span>
+                `;
+                list.appendChild(catA);
+            });
+        }
+
+        function filterSidebarCategories(val) {
+            buildSidebarNav(val);
+        }
+
+        function buildQuickPills() {
+            const container = document.getElementById('quickCategoryPills');
+            if (!container) return;
+            container.innerHTML = '';
+
+            // Dashboard Pill
+            const dashPill = document.createElement('button');
+            dashPill.type = 'button';
+            dashPill.onclick = () => switchView('dashboard');
+            dashPill.className = `px-3 py-1 rounded-lg font-medium transition-all ${
+                currentView === 'dashboard' ? 'bg-brand-600 text-white shadow-xs' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            }`;
+            dashPill.innerHTML = `<i class="fas fa-chart-pie mr-1 text-[10px]"></i> Dashboard`;
+            container.appendChild(dashPill);
+
+            // All Endpoints Pill
+            const allPill = document.createElement('button');
+            allPill.type = 'button';
+            allPill.onclick = () => switchView('all');
+            allPill.className = `px-3 py-1 rounded-lg font-medium transition-all ${
+                currentView === 'all' ? 'bg-brand-600 text-white shadow-xs' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            }`;
+            allPill.innerHTML = `<i class="fas fa-layer-group mr-1 text-[10px]"></i> Semua (${allApiItems.length})`;
+            container.appendChild(allPill);
+
+            // Categories Pills
+            originalCategories.forEach(cat => {
+                const lower = cat.name.toLowerCase();
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.onclick = () => switchView(lower);
+                btn.className = `px-3 py-1 rounded-lg font-medium transition-all ${
+                    currentView === lower ? 'bg-brand-600 text-white shadow-xs' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`;
+                btn.innerHTML = `${cat.name} <span class="opacity-70 text-[10px]">(${cat.items?.length || 0})</span>`;
+                container.appendChild(btn);
+            });
+        }
+
+        function switchView(viewName) {
+            currentView = viewName;
+            searchQuery = '';
+            const gInput = document.getElementById('globalSearchInput');
+            const mInput = document.getElementById('mobileSearchInput');
+            if (gInput) gInput.value = '';
+            if (mInput) mInput.value = '';
+            document.getElementById('clearSearchBtn')?.classList.add('hidden');
+
+            buildSidebarNav();
+            buildQuickPills();
+            renderView();
+            smoothScrollToTop();
+
+            toggleMobileSidebar(false);
+        }
+
+        function toggleMobileSidebar(open) {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('mobileBackdrop');
+            if (open) {
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('hidden');
+            }
+        }
+
+        // ==================== SEARCH HANDLERS ====================
+        function handleGlobalSearch(val) {
+            searchQuery = val.trim().toLowerCase();
+            const clearBtn = document.getElementById('clearSearchBtn');
+            if (clearBtn) {
+                if (searchQuery) clearBtn.classList.remove('hidden');
+                else clearBtn.classList.add('hidden');
+            }
+            if (searchQuery && currentView === 'dashboard') {
+                currentView = 'all';
+                buildSidebarNav();
+                buildQuickPills();
+            }
+            renderView();
+        }
+
+        function clearGlobalSearch() {
+            searchQuery = '';
+            const gInput = document.getElementById('globalSearchInput');
+            const mInput = document.getElementById('mobileSearchInput');
+            if (gInput) gInput.value = '';
+            if (mInput) mInput.value = '';
+            document.getElementById('clearSearchBtn')?.classList.add('hidden');
+            renderView();
+        }
+
+        // ==================== SMOOTH SCROLL UTILITIES ====================
+        function smoothScrollToTop() {
+            const container = document.getElementById('mainScrollContainer');
+            if (container) {
+                container.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function smoothScrollToBottom() {
+            const container = document.getElementById('mainScrollContainer');
+            if (container) {
+                container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+            }
+        }
+
+        // ==================== VIEW RENDERERS ====================
+        function renderView() {
+            const container = document.getElementById('dynamicContentArea');
+            if (!container) return;
+
+            // Update top bar text
+            if (currentView === 'dashboard') {
+                document.getElementById('topBarTitle').innerText = 'Dashboard Overview';
+                document.getElementById('topBarSubtitle').innerText = 'Statistik real-time, status server, dan panduan API';
+                renderDashboard(container);
+            } else if (currentView === 'all') {
+                document.getElementById('topBarTitle').innerText = 'Semua Endpoints';
+                document.getElementById('topBarSubtitle').innerText = `Menampilkan seluruh ${allApiItems.length} endpoint aktif`;
+                renderEndpointsList(container);
+            } else {
+                const found = originalCategories.find(c => c.name.toLowerCase() === currentView);
+                const title = found ? found.name : 'Endpoints';
+                document.getElementById('topBarTitle').innerText = `Kategori: ${title}`;
+                document.getElementById('topBarSubtitle').innerText = `Menampilkan endpoint khusus kategori ${title}`;
+                renderEndpointsList(container);
+            }
+        }
+
+        // Dashboard Renderer (Light Mode, Bento Grid, Rich UX)
+        function renderDashboard(container) {
+            const clientStats = window.clientMetrics || {
+                ip: 'Memuat...',
+                battery: 'Memuat...',
+                serverTime: new Date().toLocaleTimeString('id-ID', { hour12: false }) + ' WIB',
+                baseUrl: window.location.origin
+            };
+
+            let html = `
+                <!-- Welcome Banner -->
+                <div class="bg-gradient-to-r from-brand-50 via-indigo-50/50 to-white border border-brand-100/80 rounded-2xl p-5 sm:p-6 shadow-xs">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-brand-100/80 text-brand-700 border border-brand-200/60 mb-2">
+                                <i class="fas fa-sparkles text-brand-600"></i> REST API Documentation Engine
+                            </div>
+                            <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight">Putz API v2.0 Platform</h3>
+                            <p class="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl">
+                                Akses lebih dari <strong class="text-brand-700">200+ endpoint modern</strong> mulai dari downloader media, AI Tools, Music Player, Anime Streaming, Tools Otomatisasi, hingga integrasi GoMerch QRIS.
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <button onclick="switchView('all')" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl text-xs flex items-center gap-2 shadow-sm active:scale-95 transition-all">
+                                <i class="fas fa-compass"></i> Jelajahi Endpoint
+                            </button>
+                            <a href="https://t.me/putzpay" target="_blank" class="px-4 py-2.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-semibold rounded-xl text-xs flex items-center gap-2 shadow-xs transition-all">
+                                <i class="fab fa-telegram text-sky-500"></i> Hubungi Admin
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bento Metrics Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    
+                    <!-- Card 1: IP Address -->
+                    <div class="bg-white border border-slate-200/80 rounded-2xl p-4.5 card-hover shadow-xs flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center text-lg flex-shrink-0">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">IP Pengguna</p>
+                            <div class="flex items-center gap-1.5 mt-0.5">
+                                <p class="text-sm font-bold text-slate-800 font-mono truncate" id="dispIpUser">${clientStats.ip}</p>
+                                <button type="button" onclick="copyTextToClipboard('${clientStats.ip}', 'IP Copied')" class="text-slate-400 hover:text-brand-600 text-xs">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Battery User -->
+                    <div class="bg-white border border-slate-200/80 rounded-2xl p-4.5 card-hover shadow-xs flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center text-lg flex-shrink-0">
+                            <i class="fas fa-battery-three-quarters"></i>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Baterai Pengguna</p>
+                            <p class="text-sm font-bold text-slate-800 mt-0.5" id="dispBattery">${clientStats.battery}</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Server Clock -->
+                    <div class="bg-white border border-slate-200/80 rounded-2xl p-4.5 card-hover shadow-xs flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-purple-50 text-purple-600 border border-purple-100 flex items-center justify-center text-lg flex-shrink-0">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Waktu Server</p>
+                            <p class="text-sm font-bold text-slate-800 font-mono mt-0.5" id="dispServerTime">${clientStats.serverTime}</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Base URL -->
+                    <div class="bg-white border border-slate-200/80 rounded-2xl p-4.5 card-hover shadow-xs flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center text-lg flex-shrink-0">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Base URL Host</p>
+                            <div class="flex items-center gap-1.5 mt-0.5">
+                                <p class="text-xs font-bold text-slate-800 font-mono truncate">${clientStats.baseUrl}</p>
+                                <button type="button" onclick="copyTextToClipboard('${clientStats.baseUrl}', 'Base URL Copied')" class="text-slate-400 hover:text-brand-600 text-xs">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WhatsApp Announcement Card -->
+                <div class="bg-blue-50/70 border border-blue-200 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5">
+                    <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center text-sm flex-shrink-0 mt-0.5 shadow-xs">
+                        <i class="fas fa-bullhorn"></i>
+                    </div>
+                    <div class="flex-1 text-xs">
+                        <h4 class="font-bold text-slate-900 text-sm mb-1">Informasi Update & Pengumuman API</h4>
+                        <p class="text-slate-600 leading-relaxed">
+                            Jangan lewatkan update penambahan endpoint baru, perbaikan fitur, maupun perubahan token apikey. Bergabunglah dengan channel resmi kami untuk mendapatkan informasi terkini secara langsung.
+                        </p>
+                        <a href="https://t.me/putzpay" target="_blank" class="inline-flex items-center gap-1.5 font-bold text-blue-700 hover:text-blue-800 mt-2">
+                            Ikuti Saluran Update <i class="fas fa-arrow-right text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Explore by Categories Grid -->
+                <div class="mt-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fas fa-grid-2 text-brand-600"></i> Kategori API Unggulan
+                        </h4>
+                        <button onclick="switchView('all')" class="text-xs font-semibold text-brand-600 hover:text-brand-700">
+                            Lihat Semua (${allApiItems.length}) →
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                        ${originalCategories.map(cat => {
+                            const icon = categoryIcons[cat.name] || 'fas fa-folder';
+                            const count = cat.items?.length || 0;
+                            return `
+                                <button type="button" onclick="switchView('${cat.name.toLowerCase()}')" 
+                                        class="bg-white border border-slate-200/80 hover:border-brand-300 rounded-xl p-3.5 text-left card-hover shadow-xs flex flex-col justify-between group">
+                                    <div class="w-9 h-9 rounded-lg bg-slate-100 group-hover:bg-brand-50 group-hover:text-brand-600 text-slate-600 flex items-center justify-center text-sm transition-colors mb-2.5">
+                                        <i class="${icon}"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="text-xs font-bold text-slate-900 truncate">${cat.name}</h5>
+                                        <p class="text-[11px] text-slate-400 font-mono mt-0.5">${count} Endpoint</p>
+                                    </div>
+                                </button>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        // ==================== ENDPOINTS LIST RENDERER ====================
+        function renderEndpointsList(container) {
+            let categoriesToRender = [];
+
+            if (currentView === 'all') {
+                categoriesToRender = originalCategories.map(cat => {
+                    const matchedItems = (cat.items || []).filter(item => {
+                        if (!searchQuery) return true;
+                        return (
+                            (item.name && item.name.toLowerCase().includes(searchQuery)) ||
+                            (item.path && item.path.toLowerCase().includes(searchQuery)) ||
+                            (item.description && item.description.toLowerCase().includes(searchQuery))
+                        );
+                    });
+                    return { ...cat, items: matchedItems };
+                }).filter(cat => cat.items.length > 0);
+            } else {
+                const found = originalCategories.find(c => c.name.toLowerCase() === currentView);
+                if (found) {
+                    const matchedItems = (found.items || []).filter(item => {
+                        if (!searchQuery) return true;
+                        return (
+                            (item.name && item.name.toLowerCase().includes(searchQuery)) ||
+                            (item.path && item.path.toLowerCase().includes(searchQuery)) ||
+                            (item.description && item.description.toLowerCase().includes(searchQuery))
+                        );
+                    });
+                    if (matchedItems.length > 0) {
+                        categoriesToRender = [{ ...found, items: matchedItems }];
+                    }
+                }
+            }
+
+            if (categoriesToRender.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white border border-slate-200 rounded-2xl p-12 text-center my-6">
+                        <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-3 text-slate-400 text-xl">
+                            <i class="fas fa-magnifying-glass"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-base">Endpoint Tidak Ditemukan</h4>
+                        <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                            Tidak ada endpoint yang cocok dengan kata kunci pencarian "<strong>${searchQuery}</strong>".
+                        </p>
+                        <button onclick="clearGlobalSearch()" class="mt-4 px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold shadow-xs">
+                            Reset Pencarian
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+
+            categoriesToRender.forEach(category => {
+                const catIdx = originalCategories.findIndex(c => c.name === category.name);
+                const icon = categoryIcons[category.name] || 'fas fa-folder';
+
+                html += `
+                    <div class="space-y-3 pt-2">
+                        <div class="flex items-center justify-between border-b border-slate-200/80 pb-2.5">
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center text-xs">
+                                    <i class="${icon}"></i>
+                                </div>
+                                <h3 class="text-sm sm:text-base font-bold text-slate-900">${category.name}</h3>
+                            </div>
+                            <span class="text-xs font-mono font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">${category.items.length} API</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                `;
+
+                category.items.forEach(item => {
+                    const itemIdx = originalCategories[catIdx].items.findIndex(i => i.name === item.name && i.path === item.path);
+                    const actualIdx = itemIdx !== -1 ? itemIdx : 0;
+                    const method = (item.method || 'GET').toUpperCase();
+                    const path = item.path || '';
+                    const fullUrl = window.location.origin + path;
+
+                    html += `
+                        <div class="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs hover:border-slate-300 card-hover flex flex-col justify-between" id="card-${catIdx}-${actualIdx}">
+                            <!-- Header Info -->
+                            <div class="p-4 cursor-pointer" onclick="toggleEndpointConsole(${catIdx}, ${actualIdx})">
+                                <div class="flex items-start justify-between gap-2 mb-1.5">
+                                    <h4 class="font-bold text-sm text-slate-900 truncate flex-1">${item.name}</h4>
+                                    ${getMethodBadge(method)}
+                                </div>
+
+                                <div class="flex items-center gap-1.5 mb-2">
+                                    <code class="text-[11px] font-mono font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded truncate max-w-full" title="${path}">${path}</code>
+                                </div>
+
+                                <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">${item.description || 'Tidak ada deskripsi tambahan.'}</p>
+                            </div>
+
+                            <!-- Bottom Action Bar -->
+                            <div class="px-4 py-2.5 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between text-xs">
+                                <button type="button" onclick="toggleEndpointConsole(${catIdx}, ${actualIdx})" 
+                                        class="font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1.5 py-1">
+                                    <i class="fas fa-play text-[10px]"></i> Coba API <i class="fas fa-chevron-down text-[9px] transition-transform" id="chevron-${catIdx}-${actualIdx}"></i>
+                                </button>
+                                <div class="flex items-center gap-1">
+                                    <button type="button" onclick="copyTextToClipboard('${fullUrl}', 'URL Endpoint Disalin')" 
+                                            class="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors" title="Salin Full URL">
+                                        <i class="fas fa-copy text-xs"></i>
+                                    </button>
+                                    <a href="${fullUrl}" target="_blank" class="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors" title="Buka di tab baru">
+                                        <i class="fas fa-external-link-alt text-xs"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Expandable Console / Tester -->
+                            <div id="endpoint-console-${catIdx}-${actualIdx}" class="endpoint-expand bg-white border-t border-slate-200">
+                                <div class="p-4 space-y-4">
+                                    
+                                    <!-- Request Form -->
+                                    <form id="form-${catIdx}-${actualIdx}" onsubmit="event.preventDefault(); executeRequest(${catIdx}, ${actualIdx}, '${method}');">
+                                        
+                                        <!-- Form Input Parameters -->
+                                        <div class="space-y-2.5 mb-3" id="params-container-${catIdx}-${actualIdx}">
+                                            <!-- Injected by initializeEndpointParameters -->
+                                        </div>
+
+                                        <!-- Live URL Display -->
+                                        <div class="mb-3">
+                                            <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono mb-1">
+                                                <span>Request URL:</span>
+                                                <button type="button" onclick="copyTextToClipboard(document.getElementById('url-display-${catIdx}-${actualIdx}').innerText, 'URL Disalin')" class="hover:text-brand-600">
+                                                    <i class="fas fa-copy"></i>
+                                                </button>
+                                            </div>
+                                            <div class="text-[11px] font-mono bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-700 break-all select-all" id="url-display-${catIdx}-${actualIdx}">${fullUrl}</div>
+                                        </div>
+
+                                        <!-- Action Buttons -->
+                                        <div class="flex items-center gap-2">
+                                            <button type="submit" 
+                                                    class="flex-1 py-2 px-3 bg-brand-600 hover:bg-brand-700 active:scale-98 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all">
+                                                <i class="fas fa-paper-plane text-[10px]"></i> Send Request
+                                            </button>
+                                            <button type="button" onclick="clearEndpointForm(${catIdx}, ${actualIdx})" 
+                                                    class="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all" title="Reset Form">
+                                                <i class="fas fa-rotate-left"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+
+                                    <!-- Response Area (Initially Hidden) -->
+                                    <div id="response-box-${catIdx}-${actualIdx}" class="hidden space-y-2 pt-2 border-t border-slate-100">
+                                        <div class="flex items-center justify-between text-xs">
+                                            <div class="flex items-center gap-2">
+                                                <span id="response-status-${catIdx}-${actualIdx}" class="font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded text-[11px]">200 OK</span>
+                                                <span id="response-time-${catIdx}-${actualIdx}" class="text-[11px] font-mono text-slate-400">120ms</span>
+                                            </div>
+                                            <button type="button" onclick="copyResponseContent(${catIdx}, ${actualIdx})" class="text-xs font-semibold text-slate-500 hover:text-brand-600 flex items-center gap-1">
+                                                <i class="fas fa-copy"></i> Salin JSON
+                                            </button>
+                                        </div>
+
+                                        <!-- Media / JSON Result Container -->
+                                        <div id="response-content-${catIdx}-${actualIdx}" class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs overflow-x-auto min-h-[100px] flex items-center justify-center">
+                                            <!-- Injected after request -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `</div></div>`;
+            });
+
+            container.innerHTML = html;
+
+            // Initialize all form inputs for rendered categories
+            categoriesToRender.forEach(category => {
+                const catIdx = originalCategories.findIndex(c => c.name === category.name);
+                category.items.forEach(item => {
+                    const itemIdx = originalCategories[catIdx].items.findIndex(i => i.name === item.name && i.path === item.path);
+                    const actualIdx = itemIdx !== -1 ? itemIdx : 0;
+                    initializeEndpointParameters(catIdx, actualIdx, item);
+                });
+            });
+        }
+
+        // ==================== INTERACTIVE FORM BUILDER ====================
+        function initializeEndpointParameters(catIdx, endpointIdx, item) {
+            const container = document.getElementById(`params-container-${catIdx}-${endpointIdx}`);
+            if (!container) return;
+            const parameters = item.parameters || {};
+            let html = '';
+
+            for (const [paramName, paramConfig] of Object.entries(parameters)) {
+                const required = paramConfig.required === true;
+                const type = paramConfig.type || "string";
+                const example = paramConfig.example || "";
+                const value = paramConfig.value || (paramName.toLowerCase() === 'apikey' ? 'ptz' : '');
+                const selection = paramConfig.selection || [];
+
+                if (type === "select") {
+                    let opts = selection.map(opt => `<option value="${opt}" ${opt === value ? 'selected' : ''}>${opt}</option>`).join('');
+                    html += `
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-700 mb-1">
+                                ${paramName} ${required ? '<span class="text-rose-500">*</span>' : '<span class="text-slate-400 font-normal">(opsional)</span>'}
+                            </label>
+                            <select name="${paramName}" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500" ${required ? 'required' : ''}>
+                                ${opts}
+                            </select>
+                        </div>
+                    `;
+                } else if (type === "file" || type === "image" || type === "video" || type === "audio") {
+                    let accept = "*/*";
+                    if (type === "image") accept = "image/*";
+                    else if (type === "audio") accept = "audio/*";
+                    else if (type === "video") accept = "video/*";
+                    html += `
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-700 mb-1">
+                                ${paramName} ${required ? '<span class="text-rose-500">*</span>' : '<span class="text-slate-400 font-normal">(opsional)</span>'}
+                            </label>
+                            <input type="file" name="${paramName}" accept="${accept}" class="w-full text-xs text-slate-600 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border file:border-slate-200 file:text-xs file:font-semibold file:bg-white hover:file:bg-slate-100" ${required ? 'required' : ''}>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-700 mb-1">
+                                ${paramName} ${required ? '<span class="text-rose-500">*</span>' : '<span class="text-slate-400 font-normal">(opsional)</span>'}
+                            </label>
+                            <input type="text" name="${paramName}" placeholder="${example || 'Masukkan ' + paramName}" value="${value}" 
+                                   class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-mono" ${required ? 'required' : ''}>
+                        </div>
+                    `;
+                }
+            }
+
+            container.innerHTML = html;
+
+            // Live Update URL for GET-like endpoints (including ALL, GET, undefined)
+            const upperMethod = (item.method || 'GET').toUpperCase();
+            const isGetLike = !['POST', 'PUT', 'DELETE', 'PATCH'].includes(upperMethod);
+            if (isGetLike) {
+                const inputs = container.querySelectorAll('input, select');
+                inputs.forEach(input => {
+                    input.addEventListener('input', () => updateRequestUrl(catIdx, endpointIdx));
+                    input.addEventListener('change', () => updateRequestUrl(catIdx, endpointIdx));
+                });
+                const urlDisp = document.getElementById(`url-display-${catIdx}-${endpointIdx}`);
+                if (urlDisp) {
+                    const base = urlDisp.textContent.split('?')[0];
+                    urlDisp.dataset.baseUrl = base;
+                    setTimeout(() => updateRequestUrl(catIdx, endpointIdx), 50);
+                }
+            }
+        }
+
+        function updateRequestUrl(catIdx, endpointIdx) {
+            const form = document.getElementById(`form-${catIdx}-${endpointIdx}`);
+            const urlDisplay = document.getElementById(`url-display-${catIdx}-${endpointIdx}`);
+            if (!form || !urlDisplay) return '';
+
+            let baseUrl = urlDisplay.dataset.baseUrl;
+            if (!baseUrl) {
+                const currentUrl = urlDisplay.textContent.trim();
+                const qIndex = currentUrl.indexOf('?');
+                baseUrl = qIndex !== -1 ? currentUrl.substring(0, qIndex) : currentUrl;
+                urlDisplay.dataset.baseUrl = baseUrl;
+            }
+
+            const queryParts = [];
+            form.querySelectorAll('input[type="text"], input[type="number"], input[type="email"], input[type="url"], input:not([type]), select').forEach(inp => {
+                if (inp.name && inp.value !== undefined && inp.value.trim() !== '') {
+                    const key = inp.name.trim();
+                    const val = inp.value.trim();
+                    queryParts.push(`${encodeURIComponent(key)}=${encodeURIComponent(val)}`);
+                }
+            });
+
+            const query = queryParts.join('&');
+            const finalUrl = baseUrl + (query ? '?' + query : '');
+            urlDisplay.textContent = finalUrl;
+            return finalUrl;
+        }
+
+        function toggleEndpointConsole(catIdx, endpointIdx) {
+            const el = document.getElementById(`endpoint-console-${catIdx}-${endpointIdx}`);
+            const icon = document.getElementById(`chevron-${catIdx}-${endpointIdx}`);
+            if (!el) return;
+            const isOpen = el.classList.contains('open');
+            if (isOpen) {
+                el.classList.remove('open');
+                if (icon) icon.style.transform = 'rotate(0deg)';
+            } else {
+                el.classList.add('open');
+                if (icon) icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        function clearEndpointForm(catIdx, endpointIdx) {
+            const form = document.getElementById(`form-${catIdx}-${endpointIdx}`);
+            const respBox = document.getElementById(`response-box-${catIdx}-${endpointIdx}`);
+            if (form) {
+                form.reset();
+            }
+            if (respBox) respBox.classList.add('hidden');
+            const item = originalCategories[catIdx]?.items[endpointIdx];
+            const upperMethod = (item?.method || 'GET').toUpperCase();
+            const isGetLike = !['POST', 'PUT', 'DELETE', 'PATCH'].includes(upperMethod);
+            if (isGetLike) {
+                updateRequestUrl(catIdx, endpointIdx);
+            }
+            showToast('Form berhasil di-reset', 'info');
+        }
+
+        // ==================== API EXECUTION HANDLER ====================
+        window.executeRequest = async function(catIdx, endpointIdx, method) {
+            const form = document.getElementById(`form-${catIdx}-${endpointIdx}`);
+            const item = originalCategories[catIdx]?.items[endpointIdx];
+            if (!form || !item) return;
+
+            const respBox = document.getElementById(`response-box-${catIdx}-${endpointIdx}`);
+            const contentDiv = document.getElementById(`response-content-${catIdx}-${endpointIdx}`);
+            const timeSpan = document.getElementById(`response-time-${catIdx}-${endpointIdx}`);
+            const statusBadge = document.getElementById(`response-status-${catIdx}-${endpointIdx}`);
+
+            if (respBox) respBox.classList.remove('hidden');
+            if (contentDiv) contentDiv.innerHTML = `<div class="spinner my-4"></div>`;
+            if (statusBadge) {
+                statusBadge.className = 'font-bold text-slate-600 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded text-[11px]';
+                statusBadge.textContent = 'Sending...';
+            }
+
+            const start = Date.now();
+            let reqUrl = '';
+
+            try {
+                const upperMethod = (method || 'GET').toUpperCase();
+                const isPostLike = ['POST', 'PUT', 'PATCH'].includes(upperMethod);
+
+                if (isPostLike) {
+                    const formData = new FormData(form);
+                    reqUrl = document.getElementById(`url-display-${catIdx}-${endpointIdx}`).textContent.trim().split('?')[0];
+
+                    const payload = {};
+                    formData.forEach((value, key) => {
+                        if (typeof value === 'string') payload[key] = value;
+                    });
+
+                    const res = await fetch(reqUrl, {
+                        method: upperMethod,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json, text/plain, */*'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    await handleApiResponse(res, catIdx, endpointIdx, start);
+                } else {
+                    // Send GET request with URI-encoded query string
+                    reqUrl = updateRequestUrl(catIdx, endpointIdx);
+                    const res = await fetch(reqUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json, text/plain, */*'
+                        }
+                    });
+                    await handleApiResponse(res, catIdx, endpointIdx, start);
+                }
+            } catch (err) {
+                const duration = Date.now() - start;
+                if (timeSpan) timeSpan.textContent = `${duration}ms`;
+                if (contentDiv) {
+                    contentDiv.innerHTML = `<pre class="w-full text-[11px] font-mono text-rose-600 max-h-96 overflow-auto p-2 bg-rose-50 rounded-lg border border-rose-200 select-all">${escapeHtml(JSON.stringify({
+                        status: false,
+                        error: err.message || 'Terjadi kesalahan jaringan (Network Error)'
+                    }, null, 2))}</pre>`;
+                }
+                if (statusBadge) {
+                    statusBadge.className = 'font-bold text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded text-[11px]';
+                    statusBadge.textContent = 'Client Error';
+                }
+                showToast('Request API gagal: ' + (err.message || 'Network Error'), 'error');
+            }
+        };
+
+        async function handleApiResponse(res, catIdx, endpointIdx, start) {
+            const timeSpan = document.getElementById(`response-time-${catIdx}-${endpointIdx}`);
+            const statusBadge = document.getElementById(`response-status-${catIdx}-${endpointIdx}`);
+            const contentDiv = document.getElementById(`response-content-${catIdx}-${endpointIdx}`);
+
+            const duration = Date.now() - start;
+            if (timeSpan) timeSpan.textContent = `${duration}ms`;
+
+            const statusCode = res.status;
+            const statusText = res.statusText || (statusCode === 200 ? 'OK' : statusCode === 400 ? 'Bad Request' : statusCode === 401 ? 'Unauthorized' : statusCode === 404 ? 'Not Found' : 'Error');
+
+            if (statusBadge) {
+                if (statusCode >= 200 && statusCode < 300) {
+                    statusBadge.className = 'font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded text-[11px]';
+                    statusBadge.textContent = `HTTP ${statusCode} ${statusText}`;
+                } else if (statusCode >= 400 && statusCode < 500) {
+                    statusBadge.className = 'font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded text-[11px]';
+                    statusBadge.textContent = `HTTP ${statusCode} ${statusText}`;
+                } else {
+                    statusBadge.className = 'font-bold text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded text-[11px]';
+                    statusBadge.textContent = `HTTP ${statusCode} ${statusText}`;
+                }
+            }
+
+            const contentType = res.headers.get('content-type') || '';
+            const category = originalCategories[catIdx];
+
+            let rawBody = '';
+            let parsedJson = null;
+
+            try {
+                const text = await res.text();
+                rawBody = text;
+                try {
+                    parsedJson = JSON.parse(text);
+                } catch (_) {}
+            } catch (e) {
+                rawBody = e.message;
+            }
+
+            if (parsedJson !== null) {
+                const rawJsonText = JSON.stringify(parsedJson, null, 2);
+                const tracks = extractPlayableTracks(parsedJson);
+                const animeData = extractAnimeStreamData(parsedJson);
+
+                if (tracks.length > 0 && category?.name?.toLowerCase() === 'music') {
+                    renderMusicPlayerCard(tracks, catIdx, endpointIdx, parsedJson, rawJsonText, contentDiv);
+                } else if (animeData && category?.name?.toLowerCase() === 'anime') {
+                    renderAnimePlayerCard(animeData, catIdx, endpointIdx, parsedJson, rawJsonText, contentDiv);
+                } else {
+                    contentDiv.innerHTML = `<pre class="w-full text-[11px] font-mono text-slate-800 max-h-96 overflow-auto p-2 bg-white rounded-lg border border-slate-200 select-all">${escapeHtml(rawJsonText)}</pre>`;
+                }
+            } else if (contentType.includes('image')) {
+                try {
+                    const imgBlob = await (await fetch(res.url)).blob();
+                    const imgUrl = URL.createObjectURL(imgBlob);
+                    contentDiv.innerHTML = `
+                        <div class="text-center">
+                            <img src="${imgUrl}" class="max-h-72 rounded-xl shadow-sm border border-slate-200 mx-auto">
+                            <a href="${imgUrl}" download="putz-api-result.png" class="inline-flex items-center gap-1.5 mt-2 text-xs font-bold text-brand-600 hover:text-brand-700">
+                                <i class="fas fa-download"></i> Unduh Gambar
+                            </a>
+                        </div>
+                    `;
+                } catch (_) {
+                    contentDiv.innerHTML = `<pre class="w-full text-[11px] font-mono text-slate-800 max-h-96 overflow-auto p-2 bg-white rounded-lg border border-slate-200 select-all">${escapeHtml(rawBody)}</pre>`;
+                }
+            } else {
+                contentDiv.innerHTML = `<pre class="w-full text-[11px] font-mono text-slate-800 max-h-96 overflow-auto p-2 bg-white rounded-lg border border-slate-200 select-all">${escapeHtml(rawBody || '// Response Kosong')}</pre>`;
+            }
+
+            if (res.ok) {
+                showToast('Request berhasil', 'success');
+            } else {
+                showToast(`HTTP ${statusCode}: ${statusText}`, 'error');
+            }
+        }
+
+        function copyResponseContent(catIdx, endpointIdx) {
+            const div = document.getElementById(`response-content-${catIdx}-${endpointIdx}`);
+            if (div) {
+                copyTextToClipboard(div.innerText, 'Konten Response Disalin');
+            }
+        }
+
+        // ==================== MUSIC TRACK EXTRACTOR & PLAYER ====================
+        function extractPlayableTracks(json) {
+            if (!json || typeof json !== 'object') return [];
+            const root = json.result !== undefined ? json.result : (json.data !== undefined ? json.data : json);
+            const tracks = [];
+
+            function isValidAudioUrl(url) {
+                if (typeof url !== 'string') return false;
+                const trimmed = url.trim();
+                if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) return false;
+                if (/\.(jpe?g|png|gif|webp|svg|html)$/i.test(trimmed)) return false;
+                return true;
+            }
+
+            function processItem(item) {
+                if (!item || typeof item !== 'object') return;
+                let audioUrl = null;
+                if (isValidAudioUrl(item.preview)) audioUrl = item.preview;
+                else if (isValidAudioUrl(item.preview_url)) audioUrl = item.preview_url;
+                else if (isValidAudioUrl(item.audio_url)) audioUrl = item.audio_url;
+                else if (isValidAudioUrl(item.audio)) audioUrl = item.audio;
+                else if (isValidAudioUrl(item.url_audio)) audioUrl = item.url_audio;
+                else if (isValidAudioUrl(item.mp3)) audioUrl = item.mp3;
+                else if (isValidAudioUrl(item.link_audio)) audioUrl = item.link_audio;
+
+                if (audioUrl) {
+                    const title = item.title || item.title_short || item.track_name || item.name || "Track Audio";
+                    let artist = item.artist?.name || item.artist || item.artist_name || "Putz Music";
+                    let cover = item.album?.cover_medium || item.album?.cover || item.cover || item.picture || item.thumbnail || "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=200&auto=format&fit=crop&q=60";
+                    tracks.push({
+                        id: item.id || 'trk-' + Math.random().toString(36).substr(2, 7),
+                        title,
+                        artist,
+                        album: item.album?.title || item.album || '',
+                        cover,
+                        audioUrl,
+                        durationFormatted: item.duration_formatted || (item.duration ? formatDuration(item.duration) : "00:30"),
+                        durationSeconds: typeof item.duration === 'number' ? item.duration : 30
+                    });
+                }
+            }
+
+            if (Array.isArray(root)) {
+                root.forEach(item => processItem(item));
+            } else if (root && typeof root === 'object') {
+                processItem(root);
+                if (Array.isArray(root.tracks)) root.tracks.forEach(t => processItem(t));
+                if (Array.isArray(root.top_tracks)) root.top_tracks.forEach(t => processItem(t));
+            }
+            return tracks;
+        }
+
+        function extractAnimeStreamData(json) {
+            if (!json || typeof json !== 'object') return null;
+            const res = json.result || json;
+            let iframeUrl = json.stream_url || res.stream?.iframe_url || res.stream_url || res.iframe;
+            let mirrors = json.mirrors || res.stream?.mirrors || res.mirrors || [];
+            let downloads = json.downloads || res.downloads || [];
+            if (iframeUrl || mirrors.length > 0 || downloads.length > 0) {
+                return {
+                    title: json.title || res.title || "Anime Episode",
+                    iframeUrl,
+                    mirrors,
+                    downloads,
+                    navigation: json.navigation || res.navigation
+                };
+            }
+            return null;
+        }
+
+        function renderAnimePlayerCard(data, catIdx, endpointIdx, json, rawJsonText, container) {
+            container.innerHTML = `
+                <div class="w-full space-y-3">
+                    <h5 class="font-bold text-sm text-slate-900 truncate">${data.title}</h5>
+                    ${data.iframeUrl ? `
+                        <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden shadow-inner">
+                            <iframe src="${data.iframeUrl}" class="w-full h-full border-0" allowfullscreen allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"></iframe>
+                        </div>
+                    ` : `
+                        <div class="p-4 bg-white border border-slate-200 rounded-xl text-center text-xs text-slate-500">
+                            Pilih server mirror atau link download di bawah untuk memutar video.
+                        </div>
+                    `}
+                    ${data.downloads && data.downloads.length > 0 ? `
+                        <div class="space-y-1.5 pt-2">
+                            <span class="text-[11px] font-bold text-slate-600 uppercase tracking-wider block">Link Download:</span>
+                            <div class="flex flex-wrap gap-1.5">
+                                ${data.downloads.map(dl => `
+                                    <span class="text-xs bg-white border border-slate-200 px-2 py-1 rounded-lg text-slate-700 font-semibold">${dl.quality}</span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        const endpointTrackRegistry = {};
+
+        function renderMusicPlayerCard(tracks, catIdx, endpointIdx, json, rawJsonText, container) {
+            const epKey = `${catIdx}-${endpointIdx}`;
+            endpointTrackRegistry[epKey] = tracks;
+            const initTrack = tracks[0];
+
+            container.innerHTML = `
+                <div class="w-full space-y-3">
+                    <div class="bg-gradient-to-br from-brand-50/70 via-white to-slate-50 border border-brand-100 rounded-xl p-3.5 shadow-xs">
+                        <div class="flex items-center gap-3 mb-3">
+                            <img id="card-cover-${epKey}" src="${initTrack.cover}" class="w-14 h-14 rounded-xl object-cover border border-brand-100 shadow-xs">
+                            <div class="min-w-0 flex-1">
+                                <span class="text-[10px] font-bold bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full">Audio Preview</span>
+                                <h5 id="card-title-${epKey}" class="text-xs sm:text-sm font-bold text-slate-900 truncate mt-0.5">${initTrack.title}</h5>
+                                <p id="card-artist-${epKey}" class="text-xs text-slate-500 truncate">${initTrack.artist}</p>
+                            </div>
+                        </div>
+
+                        <!-- Progress Scrubber -->
+                        <div class="space-y-1 mb-2.5">
+                            <input type="range" id="card-seek-${epKey}" min="0" max="100" value="0" step="0.1" 
+                                   oninput="MusicPlayer.handleCardSeek(event, ${catIdx}, ${endpointIdx})" 
+                                   class="music-range-slider">
+                            <div class="flex justify-between text-[10px] font-mono text-slate-400">
+                                <span id="card-cur-time-${epKey}">00:00</span>
+                                <span id="card-dur-time-${epKey}">${initTrack.durationFormatted}</span>
+                            </div>
+                        </div>
+
+                        <!-- Playback Controls -->
+                        <div class="flex items-center justify-center gap-3">
+                            <button type="button" onclick="MusicPlayer.prev()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-brand-50 text-slate-700 flex items-center justify-center active:scale-95">
+                                <i class="fas fa-backward-step text-xs"></i>
+                            </button>
+                            <button type="button" id="card-playbtn-${epKey}" onclick="MusicPlayer.playFromEndpoint(${catIdx}, ${endpointIdx}, 0, true)" 
+                                    class="w-10 h-10 rounded-full bg-brand-600 hover:bg-brand-700 text-white flex items-center justify-center shadow-md active:scale-95">
+                                <i class="fas fa-play text-xs ml-0.5" id="card-playicon-${epKey}"></i>
+                            </button>
+                            <button type="button" onclick="MusicPlayer.next()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-brand-50 text-slate-700 flex items-center justify-center active:scale-95">
+                                <i class="fas fa-forward-step text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    ${tracks.length > 1 ? `
+                        <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                            <span class="text-[11px] font-bold text-slate-600 block mb-1">Playlist (${tracks.length} Lagu):</span>
+                            ${tracks.map((t, idx) => `
+                                <div onclick="MusicPlayer.playFromEndpoint(${catIdx}, ${endpointIdx}, ${idx})" 
+                                     class="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200/80 hover:border-brand-300 cursor-pointer text-xs">
+                                    <div class="flex items-center gap-2 truncate pr-2">
+                                        <span class="font-mono text-slate-400 text-[11px] w-4">${idx + 1}</span>
+                                        <span class="font-medium text-slate-800 truncate">${t.title} - ${t.artist}</span>
+                                    </div>
+                                    <i class="fas fa-play text-[10px] text-brand-600"></i>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // ==================== GLOBAL AUDIO PLAYER ENGINE ====================
+        const MusicPlayer = (function() {
+            const audio = new Audio();
+            audio.preload = "metadata";
+
+            const state = {
+                queue: [],
+                currentIndex: 0,
+                currentTrack: null,
+                isPlaying: false,
+                volume: 0.8,
+                isMuted: false,
+                activeEndpointKey: null
+            };
+
+            audio.volume = state.volume;
+
+            audio.addEventListener('play', () => { state.isPlaying = true; updateUIs(); });
+            audio.addEventListener('pause', () => { state.isPlaying = false; updateUIs(); });
+            audio.addEventListener('timeupdate', () => {
+                const cur = audio.currentTime || 0;
+                const dur = Math.min(audio.duration || 30, 30);
+                const percent = (cur / dur) * 100 || 0;
+
+                const miniProg = document.getElementById('miniPlayerProgress');
+                if (miniProg) miniProg.style.width = percent + '%';
+
+                const miniCur = document.getElementById('miniCurrentTime');
+                if (miniCur) miniCur.textContent = formatDuration(cur);
+
+                if (state.activeEndpointKey) {
+                    const seek = document.getElementById(`card-seek-${state.activeEndpointKey}`);
+                    if (seek) seek.value = percent;
+                    const cCur = document.getElementById(`card-cur-time-${state.activeEndpointKey}`);
+                    if (cCur) cCur.textContent = formatDuration(cur);
+                }
+            });
+
+            audio.addEventListener('ended', () => { next(); });
+
+            function playFromEndpoint(catIdx, endpointIdx, trackIdx = 0, toggle = false) {
+                const epKey = `${catIdx}-${endpointIdx}`;
+                const tracks = endpointTrackRegistry[epKey];
+                if (!tracks || !tracks.length) return;
+
+                if (toggle && state.activeEndpointKey === epKey && state.currentIndex === trackIdx) {
+                    togglePlay();
+                    return;
+                }
+
+                state.queue = tracks;
+                state.currentIndex = trackIdx;
+                state.activeEndpointKey = epKey;
+                playCurrent();
+            }
+
+            function playCurrent() {
+                const track = state.queue[state.currentIndex];
+                if (!track) return;
+                state.currentTrack = track;
+                audio.src = track.audioUrl;
+                audio.play().catch(e => console.warn('Playback error:', e));
+                showMiniPlayer();
+                updateUIs();
+            }
+
+            function togglePlay() {
+                if (!state.currentTrack && state.queue.length > 0) {
+                    playCurrent();
+                    return;
+                }
+                if (audio.paused) audio.play();
+                else audio.pause();
+            }
+
+            function next() {
+                if (!state.queue.length) return;
+                state.currentIndex = (state.currentIndex + 1) % state.queue.length;
+                playCurrent();
+            }
+
+            function prev() {
+                if (!state.queue.length) return;
+                state.currentIndex = (state.currentIndex - 1 + state.queue.length) % state.queue.length;
+                playCurrent();
+            }
+
+            function handleCardSeek(e, catIdx, endpointIdx) {
+                const percent = parseFloat(e.target.value);
+                const dur = Math.min(audio.duration || 30, 30);
+                audio.currentTime = (percent / 100) * dur;
+            }
+
+            function handleMiniBarClick(e) {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const percent = clickX / rect.width;
+                const dur = Math.min(audio.duration || 30, 30);
+                audio.currentTime = percent * dur;
+            }
+
+            function setVolume(v) {
+                state.volume = Math.max(0, Math.min(1, v));
+                audio.volume = state.volume;
+            }
+
+            function toggleMute() {
+                state.isMuted = !state.isMuted;
+                audio.muted = state.isMuted;
+            }
+
+            function showMiniPlayer() {
+                const bar = document.getElementById('stickyMiniPlayer');
+                if (bar) bar.classList.remove('translate-y-full');
+            }
+
+            function closeMiniPlayer() {
+                const bar = document.getElementById('stickyMiniPlayer');
+                if (bar) bar.classList.add('translate-y-full');
+                audio.pause();
+            }
+
+            function toggleQueueDrawer(forceOpen) {
+                const drawer = document.getElementById('musicQueueDrawer');
+                if (!drawer) return;
+                const shouldOpen = forceOpen !== undefined ? forceOpen : drawer.classList.contains('hidden');
+                if (shouldOpen) {
+                    drawer.classList.remove('hidden');
+                    renderQueueDrawer();
+                } else {
+                    drawer.classList.add('hidden');
+                }
+            }
+
+            function renderQueueDrawer() {
+                const list = document.getElementById('queueDrawerList');
+                const countEl = document.getElementById('queueDrawerCount');
+                if (!list) return;
+                if (countEl) countEl.textContent = `${state.queue.length} Lagu`;
+
+                list.innerHTML = state.queue.map((t, idx) => `
+                    <div onclick="MusicPlayer.playIndex(${idx})" 
+                         class="flex items-center justify-between p-2.5 rounded-xl border ${idx === state.currentIndex ? 'bg-brand-50 border-brand-300' : 'bg-slate-50 border-slate-200'} cursor-pointer">
+                        <div class="flex items-center gap-2.5 truncate">
+                            <img src="${t.cover}" class="w-8 h-8 rounded-lg object-cover">
+                            <div class="truncate text-xs">
+                                <h6 class="font-bold text-slate-900 truncate">${t.title}</h6>
+                                <p class="text-[11px] text-slate-500 truncate">${t.artist}</p>
+                            </div>
+                        </div>
+                        <i class="fas ${idx === state.currentIndex && state.isPlaying ? 'fa-pause' : 'fa-play'} text-brand-600 text-xs"></i>
+                    </div>
+                `).join('');
+            }
+
+            function updateUIs() {
+                const track = state.currentTrack;
+                if (!track) return;
+
+                // Mini player
+                const mCover = document.getElementById('miniPlayerCover');
+                const mTitle = document.getElementById('miniPlayerTitle');
+                const mArtist = document.getElementById('miniPlayerArtist');
+                const mPlayIcon = document.getElementById('miniPlayPauseIcon');
+                const mEq = document.getElementById('miniPlayerEq');
+                const mBadge = document.getElementById('miniQueueBadge');
+
+                if (mCover) mCover.src = track.cover;
+                if (mTitle) mTitle.textContent = track.title;
+                if (mArtist) mArtist.textContent = track.artist;
+                if (mPlayIcon) mPlayIcon.className = `fas ${state.isPlaying ? 'fa-pause' : 'fa-play'} text-xs ml-0.5`;
+                if (mEq) {
+                    if (state.isPlaying) mEq.classList.remove('hidden');
+                    else mEq.classList.add('hidden');
+                }
+                if (mBadge) mBadge.textContent = state.queue.length;
+
+                // Card player
+                if (state.activeEndpointKey) {
+                    const epKey = state.activeEndpointKey;
+                    const cCover = document.getElementById(`card-cover-${epKey}`);
+                    const cTitle = document.getElementById(`card-title-${epKey}`);
+                    const cArtist = document.getElementById(`card-artist-${epKey}`);
+                    const cPlayIcon = document.getElementById(`card-playicon-${epKey}`);
+
+                    if (cCover) cCover.src = track.cover;
+                    if (cTitle) cTitle.textContent = track.title;
+                    if (cArtist) cArtist.textContent = track.artist;
+                    if (cPlayIcon) cPlayIcon.className = `fas ${state.isPlaying ? 'fa-pause' : 'fa-play'} text-xs ml-0.5`;
+                }
+            }
+
+            function playIndex(idx) {
+                state.currentIndex = idx;
+                playCurrent();
+            }
+
+            return {
+                playFromEndpoint,
+                togglePlay,
+                next,
+                prev,
+                handleCardSeek,
+                handleMiniBarClick,
+                setVolume,
+                toggleMute,
+                closeMiniPlayer,
+                toggleQueueDrawer,
+                playIndex
+            };
+        })();
+
+        window.MusicPlayer = MusicPlayer;
+
+        // ==================== STATS & HELPER UTILITIES ====================
+        function initClientStats() {
+            window.clientMetrics = {
+                ip: 'Mendeteksi...',
+                battery: 'Mendeteksi...',
+                serverTime: new Date().toLocaleTimeString('id-ID', { hour12: false }) + ' WIB',
+                baseUrl: window.location.origin
+            };
+
+            // Fetch Public IP
+            fetch('https://api.ipify.org?format=json')
+                .then(r => r.json())
+                .then(d => {
+                    window.clientMetrics.ip = d.ip;
+                    const el = document.getElementById('dispIpUser');
+                    if (el) el.textContent = d.ip;
+                })
+                .catch(() => {
+                    window.clientMetrics.ip = '127.0.0.1';
+                });
+
+            // Battery API
+            if ('getBattery' in navigator) {
+                navigator.getBattery().then(batt => {
+                    window.clientMetrics.battery = Math.round(batt.level * 100) + '%';
+                    const el = document.getElementById('dispBattery');
+                    if (el) el.textContent = window.clientMetrics.battery;
+                }).catch(() => {});
+            } else {
+                window.clientMetrics.battery = 'Tidak didukung';
+            }
+
+            // Real-time Clock Update
+            setInterval(() => {
+                window.clientMetrics.serverTime = new Date().toLocaleTimeString('id-ID', { hour12: false }) + ' WIB';
+                const el = document.getElementById('dispServerTime');
+                if (el) el.textContent = window.clientMetrics.serverTime;
+            }, 1000);
+        }
+
+        function formatDuration(sec) {
+            if (!sec || isNaN(sec)) return "00:30";
+            const m = Math.floor(sec / 60);
+            const s = Math.floor(sec % 60);
+            return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function copyTextToClipboard(text, successMsg = 'Teks berhasil disalin') {
+            if (!text) return;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(successMsg, 'success');
+            }).catch(() => {
+                showToast('Gagal menyalin teks', 'error');
+            });
+        }
+
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            const icon = type === 'success' ? 'fa-check-circle text-emerald-600' : type === 'error' ? 'fa-triangle-exclamation text-rose-600' : 'fa-circle-info text-blue-600';
+            
+            toast.className = 'toast show px-4 py-2.5 rounded-xl bg-white border border-slate-200 shadow-lg text-xs font-semibold text-slate-800 flex items-center gap-2 pointer-events-auto';
+            toast.innerHTML = `<i class="fas ${icon}"></i> <span>${msg}</span>`;
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+    </script>
+</body>
+</html>

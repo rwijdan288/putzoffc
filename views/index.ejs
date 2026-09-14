@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PutzGomerch Api</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #e8e6fb;
+            --ink: #0a0a0a;
+            --card-bg: #ffffff;
+            --accent-cyan: #22d3ee;
+            --accent-purple: #8b5cf6;
+            --accent-pink: #fb4570;
+            --accent-amber: #fbbf24;
+            --accent-emerald: #2dd4bf;
+            --accent-blue: #60a5fa;
+            --terminal-bg: #0b0f17;
+            --terminal-text: #b4f0c8;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            background-image:
+                linear-gradient(rgba(10, 10, 10, 0.05) 1.5px, transparent 1.5px),
+                linear-gradient(90deg, rgba(10, 10, 10, 0.05) 1.5px, transparent 1.5px);
+            background-size: 32px 32px;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--ink);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            margin: 0;
+        }
+
+        .display-font { font-family: 'Space Grotesk', 'Inter', sans-serif; }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 12px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* ===== Neubrutalist card shell ===== */
+        .premium-card {
+            background: var(--card-bg);
+            border: 3px solid var(--ink);
+            border-radius: 24px;
+            box-shadow: 7px 7px 0 var(--ink);
+            transition: all 0.2s ease;
+            animation: cardAppear 0.45s ease forwards;
+            position: relative;
+            overflow: hidden;
+        }
+        .premium-card:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 9px 9px 0 var(--ink);
+        }
+
+        @keyframes cardAppear {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dashed-divider {
+            border: none;
+            border-top: 3px dashed rgba(10, 10, 10, 0.35);
+            margin: 0;
+        }
+
+        /* ===== Inputs ===== */
+        .glass-input {
+            background: #ffffff;
+            border: 2.5px solid var(--ink);
+            border-radius: 16px;
+            transition: all 0.2s ease;
+            overflow: hidden;
+        }
+        .glass-input:focus-within {
+            box-shadow: 4px 4px 0 var(--ink);
+            transform: translate(-1px, -1px);
+        }
+        .glass-input input {
+            background: transparent;
+            border: none;
+            outline: none;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--ink);
+            padding: 16px 0;
+            width: 100%;
+        }
+        .glass-input input::placeholder {
+            color: #9ca3af;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: -0.01em;
+        }
+        .glass-input .param-label {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--ink);
+            white-space: nowrap;
+            user-select: none;
+            letter-spacing: -0.01em;
+            padding-right: 4px;
+        }
+
+        /* ===== Response terminal ===== */
+        .api-terminal {
+            background: var(--terminal-bg);
+            background-image:
+                linear-gradient(rgba(34, 211, 238, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(34, 211, 238, 0.04) 1px, transparent 1px);
+            background-size: 22px 22px;
+            color: var(--terminal-text);
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            border: 3px solid var(--ink);
+            border-radius: 20px;
+            box-shadow: 5px 5px 0 var(--ink);
+            position: relative;
+        }
+        .api-terminal .dots {
+            position: absolute;
+            top: 14px;
+            left: 16px;
+            display: flex;
+            gap: 9px;
+            z-index: 2;
+        }
+        .api-terminal .dots span {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            display: block;
+            border: 1.5px solid rgba(0,0,0,0.4);
+        }
+        .api-terminal .dots span:nth-child(1) { background: #f43f5e; }
+        .api-terminal .dots span:nth-child(2) { background: #fbbf24; }
+        .api-terminal .dots span:nth-child(3) { background: #34d399; }
+        .api-terminal pre {
+            padding-top: 36px;
+            scrollbar-width: thin;
+            scrollbar-color: #334155 transparent;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .api-terminal pre::-webkit-scrollbar { width: 5px; height: 5px; }
+        .api-terminal pre::-webkit-scrollbar-thumb { background: #334155; border-radius: 8px; }
+
+        /* ===== Badges ===== */
+        .endpoint-badge {
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 7px 14px;
+            border: 2.5px solid var(--ink);
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 3px 3px 0 var(--ink);
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            padding: 12px 24px;
+            border: 3px solid var(--ink);
+            border-radius: 14px;
+            background: var(--accent-emerald);
+            color: #052e28;
+            box-shadow: 4px 4px 0 var(--ink);
+        }
+
+        /* ===== Buttons ===== */
+        .btn-primary {
+            background: var(--ink);
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            border-radius: 16px;
+            padding: 16px 24px;
+            transition: all 0.15s ease;
+            border: 3px solid var(--ink);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            position: relative;
+            box-shadow: 5px 5px 0 rgba(10,10,10,0.4);
+        }
+        .btn-primary:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 7px 7px 0 rgba(10,10,10,0.4);
+        }
+        .btn-primary:active { transform: translate(1px, 1px); box-shadow: 2px 2px 0 rgba(10,10,10,0.4); }
+
+        .btn-copy {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 16px;
+            font-size: 0.8125rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            border-radius: 12px;
+            background: #ffffff;
+            border: 2.5px solid var(--ink);
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 3px 3px 0 var(--ink);
+        }
+        .btn-copy:hover {
+            background: var(--accent-cyan);
+            transform: translate(-2px, -2px);
+            box-shadow: 5px 5px 0 var(--ink);
+        }
+        .btn-copy:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--ink); }
+        .btn-copy.copied {
+            background: var(--accent-emerald);
+            animation: copyPulse 0.5s ease;
+        }
+        @keyframes copyPulse {
+            0%, 100% { box-shadow: 3px 3px 0 var(--ink); }
+            50% { box-shadow: 6px 6px 0 var(--ink); }
+        }
+
+        .copy-result-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 5;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            border-radius: 10px;
+            background: #ffffff;
+            border: 2px solid var(--ink);
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 2px 2px 0 var(--ink);
+        }
+        .copy-result-btn:hover {
+            background: var(--accent-cyan);
+            transform: translate(-1px, -1px);
+        }
+        .copy-result-btn.copied {
+            background: var(--accent-emerald);
+        }
+
+        /* ===== Header ===== */
+        .app-header {
+            background: #ffffff;
+            border-bottom: 3px solid var(--ink);
+        }
+        .logo-box {
+            width: 46px;
+            height: 46px;
+            background: var(--accent-cyan);
+            border: 3px solid var(--ink);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 4px 4px 0 var(--ink);
+        }
+        .status-box {
+            width: 46px;
+            height: 46px;
+            background: #ffffff;
+            border: 3px solid var(--ink);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 4px 4px 0 var(--ink);
+            position: relative;
+        }
+        .status-box .ping-dot {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--accent-emerald);
+            border: 2px solid var(--ink);
+        }
+
+        /* ===== Footer ===== */
+        footer {
+            border-top: 3px solid var(--ink);
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 28px;
+            left: 28px;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        .toast {
+            background: #ffffff;
+            color: var(--ink);
+            font-size: 0.9375rem;
+            font-weight: 800;
+            padding: 16px 24px;
+            border: 3px solid var(--ink);
+            border-radius: 16px;
+            box-shadow: 6px 6px 0 var(--ink);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            transform: translateY(24px) scale(0.95);
+            transition: all 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+            pointer-events: auto;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <nav class="app-header sticky top-0 z-50 w-full">
+        <div class="max-w-6xl mx-auto px-5 md:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="logo-box">
+                    <i data-lucide="zap" class="w-6 h-6 text-black" fill="black"></i>
+                </div>
+                <span class="display-font font-bold text-xl sm:text-2xl tracking-tight text-black">
+                    PutzGomerch <span class="text-fuchsia-500">Api</span>
+                </span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="/" class="px-4 py-2 border-[2.5px] border-black rounded-xl bg-white font-bold text-xs" style="box-shadow:3px 3px 0 var(--ink);">
+                    Main Docs
+                </a>
+                <div class="hidden sm:flex items-center gap-2 px-4 py-2 border-[2.5px] border-black rounded-xl bg-emerald-300" style="box-shadow:3px 3px 0 var(--ink);">
+                    <span class="relative flex h-2.5 w-2.5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-700 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-800"></span>
+                    </span>
+                    <span class="text-[0.7rem] font-black text-emerald-900 uppercase tracking-widest">Live Server</span>
+                </div>
+                <div class="status-box">
+                    <i data-lucide="server" class="w-5 h-5 text-black"></i>
+                    <span class="ping-dot"></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-4 sm:p-6 md:p-10 pb-32">
+        <div class="space-y-6 sm:space-y-8">
+
+            <div class="premium-card p-6 sm:p-8">
+                <h1 class="display-font font-bold text-2xl sm:text-3xl text-violet-600 mb-2">
+                    Gopay Merchant Api Explorer
+                </h1>
+                <p class="text-sm sm:text-base text-slate-600 max-w-2xl">
+                    Jalankan endpoint autentikasi OTP, verifikasi, refresh token, riwayat transaksi, dan QRIS langsung dari browser.
+                </p>
+                <hr class="dashed-divider my-6">
+                <div class="flex flex-col items-center gap-2 text-center">
+                    <span class="status-pill">
+                        <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                        Server Online
+                    </span>
+                    <p class="text-sm text-slate-500 mt-1">
+                        Siap menjalankan request API.
+                    </p>
+                </div>
+            </div>
+
+            <div class="premium-card p-6 sm:p-8" data-endpoint="auth-otp">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    <div class="flex items-center gap-4 flex-wrap">
+                        <span class="endpoint-badge bg-cyan-300 text-black">
+                            <i data-lucide="arrow-right-circle" class="w-4 h-4"></i>
+                            GET
+                        </span>
+                        <code class="text-lg font-bold text-black tracking-tight">
+                            /auth/otp
+                        </code>
+                    </div>
+                    <button
+                        onclick="copyEndpointWithParams('auth-otp', '/auth/otp', ['phone'])"
+                        class="btn-copy"
+                        id="copy-btn-auth-otp">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                        Copy URL
+                    </button>
+                </div>
+                <div class="flex flex-col lg:flex-row gap-6 items-stretch">
+                    <div class="w-full lg:w-1/2 space-y-4 flex flex-col">
+                        <div class="glass-input flex items-center px-5">
+                            <span class="param-label min-w-[60px]">phone=</span>
+                            <input
+                                type="text"
+                                id="param-auth-otp-phone"
+                                placeholder="628xxxxxxxx"
+                                class="w-full bg-transparent outline-none py-5 text-lg">
+                        </div>
+                        <button
+                            onclick="runApiTest('/auth/otp', {phone: getVal('param-auth-otp-phone')}, 'res-otp')"
+                            class="btn-primary mt-auto py-5"
+                            style="background: var(--accent-cyan); color: var(--ink);">
+                            <i data-lucide="play" class="w-5 h-5"></i>
+                            <span>Jalankan</span>
+                        </button>
+                    </div>
+                    <div class="w-full lg:w-1/2 min-h-[180px]">
+                        <div class="api-terminal relative h-full min-h-[180px] rounded-2xl">
+                            <div class="dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                            <button class="copy-result-btn" onclick="copyResult('res-otp')">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <pre id="res-otp" class="p-5 sm:p-6 h-full overflow-auto custom-scrollbar" style="padding-top: 42px;">// Response JSON</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="premium-card p-6 sm:p-8" data-endpoint="auth-verify">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    <div class="flex items-center gap-4 flex-wrap">
+                        <span class="endpoint-badge bg-cyan-300 text-black">
+                            <i data-lucide="arrow-right-circle" class="w-4 h-4"></i>
+                            GET
+                        </span>
+                        <code class="text-lg font-bold text-black tracking-tight">
+                            /auth/verify
+                        </code>
+                    </div>
+                    <button
+                        onclick="copyEndpointWithParams('auth-verify', '/auth/verify', ['otp', 'otp_token'])"
+                        class="btn-copy"
+                        id="copy-btn-auth-verify">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                        Copy URL
+                    </button>
+                </div>
+                <div class="flex flex-col lg:flex-row gap-6 items-stretch">
+                    <div class="w-full lg:w-1/2 space-y-4 flex flex-col">
+                        <div class="glass-input flex items-center px-5">
+                            <span class="param-label min-w-[46px]">otp=</span>
+                            <input
+                                type="text"
+                                id="param-auth-verify-otp"
+                                placeholder="1234"
+                                class="w-full bg-transparent outline-none py-5 text-lg">
+                        </div>
+                        <div class="glass-input flex items-center px-5">
+                            <span class="param-label min-w-[98px]">otp_token=</span>
+                            <input
+                                type="text"
+                                id="param-auth-verify-otp_token"
+                                placeholder="token_dari_request_otp"
+                                class="w-full bg-transparent outline-none py-5 text-lg">
+                        </div>
+                        <button
+                            onclick="runApiTest('/auth/verify', {otp: getVal('param-auth-verify-otp'), otp_token: getVal('param-auth-verify-otp_token')}, 'res-verify')"
+                            class="btn-primary mt-auto py-5"
+                            style="background: var(--accent-purple); color: #ffffff;">
+                            <i data-lucide="play" class="w-5 h-5"></i>
+                            <span>Jalankan</span>
+                        </button>
+                    </div>
+                    <div class="w-full lg:w-1/2 min-h-[220px]">
+                        <div class="api-terminal relative h-full min-h-[220px] rounded-2xl">
+                            <div class="dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                            <button class="copy-result-btn" onclick="copyResult('res-verify')">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <pre id="res-verify" class="p-5 sm:p-6 h-full overflow-auto custom-scrollbar" style="padding-top: 42px;">// Response JSON</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="premium-card p-6 sm:p-8" data-endpoint="api-history">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    <div class="flex items-center gap-4 flex-wrap">
+                        <span class="endpoint-badge bg-cyan-300 text-black">
+                            <i data-lucide="arrow-right-circle" class="w-4 h-4"></i>
+                            GET
+                        </span>
+                        <code class="text-lg font-bold text-black tracking-tight">
+                            /api/history
+                        </code>
+                    </div>
+                    <button
+                        onclick="copyEndpointWithParams('api-history', '/api/history', ['token', 'start_time'])"
+                        class="btn-copy"
+                        id="copy-btn-api-history">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                        Copy URL
+                    </button>
+                </div>
+                <div class="flex flex-col lg:flex-row gap-6 items-stretch">
+                    <div class="w-full lg:w-1/2 space-y-4 flex flex-col">
+                        <div class="glass-input flex items-center px-5">
+                            <span class="param-label min-w-[58px]">token=</span>
+                            <input
+                                type="text"
+                                id="param-api-history-token"
+                                placeholder="access_token_anda"
+                                class="w-full bg-transparent outline-none py-5 text-lg">
+                        </div>
+                        <div class="glass-input flex items-center px-5">
+                            <span class="param-label min-w-[98px]">start_time=</span>
+                            <input
+                                type="text"
+                                id="param-api-history-start_time"
+                                placeholder="YYYY-MM-DD (opsional)"
+                                class="w-full bg-transparent outline-none py-5 text-lg">
+                        </div>
+                        <button
+                            onclick="runApiTest('/api/history', {token: getVal('param-api-history-token'), start_time: getVal('param-api-history-start_time')}, 'res-hist')"
+                            class="btn-primary mt-auto py-5"
+                            style="background: var(--accent-amber); color: var(--ink);">
+                            <i data-lucide="play" class="w-5 h-5"></i>
+                            <span>Jalankan</span>
+                        </button>
+                    </div>
+                    <div class="w-full lg:w-1/2 min-h-[220px]">
+                        <div class="api-terminal relative h-full min-h-[220px] rounded-2xl">
+                            <div class="dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                            <button class="copy-result-btn" onclick="copyResult('res-hist')">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <pre id="res-hist" class="p-5 sm:p-6 h-full overflow-auto custom-scrollbar" style="padding-top: 42px;">// Response JSON</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="premium-card p-6 sm:p-8" data-endpoint="api-trx-detail">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    <div class="flex items-center gap-4 flex-wrap">
+                        <span class="endpoint-badge bg-cyan-300 text-black">
+                            <i data-lucide="arrow-right-circle" class="w-4 h-4"></i>
+                            GET
+                        </span>
+                        <code class="text-lg font-bold text-black tracking-tight">
+                            /api/trx/detail
+                        </code>
+                    </div>
+                    <button
+                        onclick="copyEndpointWithParams('api-trx-detail', '/api/trx/detail', ['token','transaction_id'])"
+                        class="btn-copy"
+                        id="copy-btn-api-trx-detail">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                        Copy URL
+                    </button>
+                </div>
+                <div class="flex flex-col lg:flex-row gap-6 items-stretch">
+                    <div class="w-full lg:w-1/2 space-y-4 flex flex-col">
+                        <div class="glass-input flex items-center px-5">
+                            <span class="param-label min-w-[60px]">token=</span>
+                            <input type="text" id="param-api-trx-detail-token" placeholder="access_token_anda" class="w-full bg-transparent outline-none py-5 text-lg">
+                        </div>
+                        <div class="glass-input flex items-center px-5">
+                            <span class="param-label min-w-[110px]">transaction_id=</span>
+                            <input type="text" id="param-api-trx-detail-transaction_id" placeholder="ID Transaksi" class="w-full bg-transparent outline-none py-5 text-lg">
+                        </div>
+                        <button
+                            onclick="runApiTest('/api/trx/detail',{token:getVal('param-api-trx-detail-token'),transaction_id:getVal('param-api-trx-detail-transaction_id')},'res-trx-detail')"
+                            class="btn-primary mt-auto py-5"
+                            style="background:var(--accent-purple);color:#fff;">
+                            <i data-lucide="play" class="w-5 h-5"></i>
+                            <span>Jalankan</span>
+                        </button>
+                    </div>
+                    <div class="w-full lg:w-1/2 min-h-[220px]">
+                        <div class="api-terminal relative h-full min-h-[220px] rounded-2xl">
+                            <div class="dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                            <button class="copy-result-btn" onclick="copyResult('res-trx-detail')">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <pre id="res-trx-detail" class="p-5 sm:p-6 h-full overflow-auto custom-scrollbar" style="padding-top:42px;">// Response JSON</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="premium-card p-6 sm:p-8" data-endpoint="api-trx-cancel">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    <div class="flex items-center gap-4 flex-wrap">
+                        <span class="endpoint-badge bg-cyan-300 text-black">
+                            <i data-lucide="arrow-right-circle" class="w-4 h-4"></i>
+                            GET
+                        </span>
+                        <code class="text-lg font-bold text-black tracking-tight">
+                            /api/trx/cancel
+                        </code>
+                    </div>
+                    <button
+                        onclick="copyEndpointWithParams('api-trx-cancel', '/api/trx/cancel', ['token','transaction_id'])"
+                        class="btn-copy"
+                        id="copy-btn-api-trx-cancel">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                        Copy URL
+                    </button>
+                </div>
+                <div class="flex flex-col lg:flex-row gap-6 items-stretch">
+                    <div class="w-full lg:w-1/2 space-y-4 flex flex-col">
+                        <div class="glass-input flex items-center px-5">
+                            <span class="param-label min-w-[60px]">token=</span>
+                            <input type="text" id="param-api-trx-cancel-token" placeholder="access_token_anda" class="w-full bg-transparent outline-none py-5 text-lg">
+                        </div>
+                        <div class="glass-input flex items-center px-5">
+                            <span class="param-label min-w-[110px]">transaction_id=</span>
+                            <input type="text" id="param-api-trx-cancel-transaction_id" placeholder="ID Transaksi" class="w-full bg-transparent outline-none py-5 text-lg">
+                        </div>
+                        <button
+                            onclick="runApiTest('/api/trx/cancel',{token:getVal('param-api-trx-cancel-token'),transaction_id:getVal('param-api-trx-cancel-transaction_id')},'res-trx-cancel')"
+                            class="btn-primary mt-auto py-5"
+                            style="background:#ef4444;color:#fff;">
+                            <i data-lucide="play" class="w-5 h-5"></i>
+                            <span>Jalankan</span>
+                        </button>
+                    </div>
+                    <div class="w-full lg:w-1/2 min-h-[220px]">
+                        <div class="api-terminal relative h-full min-h-[220px] rounded-2xl">
+                            <div class="dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                            <button class="copy-result-btn" onclick="copyResult('res-trx-cancel')">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <pre id="res-trx-cancel" class="p-5 sm:p-6 h-full overflow-auto custom-scrollbar" style="padding-top:42px;">// Response JSON</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="premium-card p-6 sm:p-8" data-endpoint="api-qris-create">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    <div class="flex items-center gap-4 flex-wrap">
+                        <span class="endpoint-badge bg-cyan-300 text-black">
+                            <i data-lucide="arrow-right-circle" class="w-4 h-4"></i>
+                            GET
+                        </span>
+                        <code class="text-lg font-bold text-black tracking-tight">
+                            /api/qris/create
+                        </code>
+                    </div>
+                    <button
+                        onclick="copyEndpointWithParams('api-qris-create', '/api/qris/create', ['amount', 'static_qr'])"
+                        class="btn-copy"
+                        id="copy-btn-api-qris-create">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                        Copy URL
+                    </button>
+                </div>
+                <div class="flex flex-col lg:flex-row gap-6 items-stretch">
+                    <div class="w-full lg:w-1/2 space-y-4 flex flex-col">
+                        <div class="glass-input flex items-center px-5">
+                            <span class="param-label min-w-[72px]">amount=</span>
+                            <input
+                                type="number"
+                                id="param-api-qris-create-amount"
+                                placeholder="50000"
+                                class="w-full bg-transparent outline-none py-5 text-lg">
+                        </div>
+                        <div class="glass-input flex items-center px-5">
+                            <span class="param-label min-w-[82px]">static_qr=</span>
+                            <input
+                                type="text"
+                                id="param-api-qris-create-static_qr"
+                                placeholder="000201010212..."
+                                class="w-full bg-transparent outline-none py-5 text-lg">
+                        </div>
+                        <button
+                            onclick="runApiTest('/api/qris/create', {amount: getVal('param-api-qris-create-amount'), static_qr: getVal('param-api-qris-create-static_qr')}, 'res-qr')"
+                            class="btn-primary mt-auto py-5"
+                            style="background: var(--accent-emerald); color: var(--ink);">
+                            <i data-lucide="play" class="w-5 h-5"></i>
+                            <span>Jalankan</span>
+                        </button>
+                    </div>
+                    <div class="w-full lg:w-1/2 min-h-[220px]">
+                        <div class="api-terminal relative h-full min-h-[220px] rounded-2xl">
+                            <div class="dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                            <button class="copy-result-btn" onclick="copyResult('res-qr')">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <pre id="res-qr" class="p-5 sm:p-6 h-full overflow-auto custom-scrollbar" style="padding-top: 42px;">// Response JSON</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="premium-card p-6 sm:p-8" data-endpoint="auth-refresh">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    <div class="flex items-center gap-4 flex-wrap">
+                        <span class="endpoint-badge bg-cyan-300 text-black">
+                            <i data-lucide="arrow-right-circle" class="w-4 h-4"></i>
+                            GET
+                        </span>
+                        <code class="text-lg font-bold text-black tracking-tight">
+                            /auth/refresh/token
+                        </code>
+                    </div>
+                    <button
+                        onclick="copyEndpointWithParams('auth-refresh', '/auth/refresh/token', ['refresh_token'])"
+                        class="btn-copy"
+                        id="copy-btn-auth-refresh">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                        Copy URL
+                    </button>
+                </div>
+                <div class="flex flex-col lg:flex-row gap-6 items-stretch">
+                    <div class="w-full lg:w-1/2 space-y-4 flex flex-col">
+                        <div class="glass-input flex items-center px-5">
+                            <span class="param-label min-w-[120px]">refresh_token=</span>
+                            <input
+                                type="text"
+                                id="param-auth-refresh-refresh_token"
+                                placeholder="refresh_token_anda"
+                                class="w-full bg-transparent outline-none py-5 text-lg">
+                        </div>
+                        <button
+                            onclick="runApiTest('/auth/refresh/token', {refresh_token: getVal('param-auth-refresh-refresh_token')}, 'res-refresh')"
+                            class="btn-primary mt-auto py-5"
+                            style="background: var(--accent-blue); color: var(--ink);">
+                            <i data-lucide="play" class="w-5 h-5"></i>
+                            <span>Jalankan</span>
+                        </button>
+                    </div>
+                    <div class="w-full lg:w-1/2 min-h-[180px]">
+                        <div class="api-terminal relative h-full min-h-[180px] rounded-2xl">
+                            <div class="dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                            <button class="copy-result-btn" onclick="copyResult('res-refresh')">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <pre id="res-refresh" class="p-5 sm:p-6 h-full overflow-auto custom-scrollbar" style="padding-top: 42px;">// Response JSON</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="w-full py-8 px-4 text-center">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2 text-black text-sm font-semibold">
+                <i data-lucide="code-2" class="w-4 h-4 text-fuchsia-500"></i>
+                <span class="tracking-wide">
+                    © 2026 PutzOffc x KaaOffc. All rights reserved.
+                </span>
+            </div>
+            <div class="flex items-center gap-4 text-xs text-slate-700 font-semibold">
+                <span class="flex items-center gap-1">
+                    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+                    Secure API
+                </span>
+                <span class="flex items-center gap-1">
+                    <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-500"></i>
+                    High Performance
+                </span>
+            </div>
+        </div>
+    </footer>
+
+    <div class="toast-container">
+        <div id="toast" class="toast">
+            <span class="toast-icon">✅</span>
+            <span id="toast-msg">Copied!</span>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const BASE_URL = window.location.origin;
+
+        function getVal(id) {
+            const el = document.getElementById(id);
+            return el ? el.value.trim() : '';
+        }
+
+        let toastTimer;
+        function showToast(message, icon = '✅') {
+            const toast = document.getElementById('toast');
+            const msg = document.getElementById('toast-msg');
+            const iconEl = toast.querySelector('.toast-icon');
+            iconEl.textContent = icon;
+            msg.textContent = message;
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2400);
+        }
+
+        function copyEndpointWithParams(endpointKey, path, paramNames) {
+            const params = {};
+            let filledCount = 0;
+            paramNames.forEach(pName => {
+                const inputId = `param-${endpointKey}-${pName}`;
+                const val = getVal(inputId);
+                params[pName] = val; 
+                if (val !== '') filledCount++;
+            });
+            const query = new URLSearchParams(params).toString();
+            const fullUrl = query ? `${BASE_URL}${path}?${query}` : `${BASE_URL}${path}`;
+            navigator.clipboard.writeText(fullUrl).then(() => {
+                const btn = document.getElementById(`copy-btn-${endpointKey}`);
+                if (btn) {
+                    btn.classList.add('copied');
+                    setTimeout(() => btn.classList.remove('copied'), 1500);
+                }
+                const suffix = filledCount > 0 ? ` (+ ${filledCount} param)` : '';
+                showToast(`URL disalin${suffix}`, '📋');
+            }).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = fullUrl;
+                ta.style.position = 'fixed'; ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand('copy'); showToast('URL disalin', '📋'); } catch (e) { showToast('Gagal menyalin', '⚠️'); }
+                document.body.removeChild(ta);
+            });
+        }
+
+        function copyResult(preId) {
+            const pre = document.getElementById(preId);
+            if (!pre) return;
+            const text = pre.innerText || pre.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const terminal = pre.closest('.api-terminal');
+                const btn = terminal ? terminal.querySelector('.copy-result-btn') : null;
+                if (btn) {
+                    btn.classList.add('copied');
+                    setTimeout(() => btn.classList.remove('copied'), 1500);
+                }
+                showToast('Result disalin', '📋');
+            }).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed'; ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand('copy'); showToast('Result disalin', '📋'); } catch (e) { showToast('Gagal menyalin', '⚠️'); }
+                document.body.removeChild(ta);
+            });
+        }
+
+        async function fetchGET(url, params = {}) {
+            Object.keys(params).forEach(k => {
+                if (params[k] === '' || params[k] === null || params[k] === undefined) delete params[k];
+            });
+            const query = new URLSearchParams(params).toString();
+            const fullUrl = query ? `${url}?${query}` : url;
+            try {
+                const res = await fetch(fullUrl);
+                const data = await res.json();
+                return data;
+            } catch (error) {
+                return {
+                    success: false,
+                    error_type: "Network / CORS Error",
+                    message: error.message,
+                    attempted_url: fullUrl,
+                    hint: "Pastikan backend server berjalan dan mengizinkan CORS."
+                };
+            }
+        }
+
+        async function runApiTest(endpoint, params, resultElementId) {
+            const resEl = document.getElementById(resultElementId);
+            resEl.innerText = "// Loading...";
+            resEl.style.color = '#fbbf24';
+            try {
+                const res = await fetchGET(endpoint, params);
+                resEl.style.color = res.error_type === "Network / CORS Error" ? '#f87171' : '#b4f0c8';
+                resEl.innerText = JSON.stringify(res, null, 2);
+            } catch (e) {
+                resEl.style.color = '#f87171';
+                resEl.innerText = "// Error:\n" + e.message;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+        const observer = new MutationObserver(() => { lucide.createIcons(); });
+        observer.observe(document.getElementById('toast'), { childList: true, subtree: true });
+    </script>
+</body>
+</html>

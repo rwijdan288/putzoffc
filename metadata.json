@@ -1,0 +1,6 @@
+{
+  "name": "Putz Api",
+  "description": "Interactive Putz Api documentation with Alight Motion Premium and multi-service endpoints by PutzOfficial.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
