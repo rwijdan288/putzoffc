@@ -2,7 +2,7 @@ const { GoogleGenAI } = require("@google/genai");
 const axios = require("axios");
 const { generateAndUploadImage, isImageGenerationPrompt } = require("../lib/ai-image-generator");
 
-const DEFAULT_GEMINI_API_KEY = (process.env.API_KEY_GEMINI || process.env.GEMINI_API_KEY || "API_KEY").trim();
+const DEFAULT_GEMINI_API_KEY = (process.env.API_KEY_GEMINI || process.env.GEMINI_API_KEY || "AQ.Ab8RN6JaArEMtnnVlN9-Gj-aAM5NnFIKVHOgtfy-GY6SpCPknw").trim();
 const DEFAULT_MODEL = "gemini-3.6-flash";
 
 function getAuthorInfo() {
